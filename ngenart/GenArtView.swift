@@ -2,136 +2,172 @@ import SwiftUI
 import HealthKit
 import WidgetKit
 
-@available(iOS 16.0, *)
 public struct GenArtView: View {
     @State private var totalDistance: Double = 0
-    @State private var useImperialUnits: Bool
-    @State private var startYear: Int
-    @State private var availableYears: [Int] = []
+    @State private var useImperialUnits: Bool = UserManager.shared.useImperialUnits
+    @State private var startYear: Int = UserManager.shared.startYear
+    @State private var earliestYear: Int = Calendar.current.component(.year, from: Date())
+    @State private var isLoading: Bool = true
+    
     let healthStore = HKHealthStore()
 
-    public init() {
-        _useImperialUnits = State(initialValue: UserManager.shared.useImperialUnits)
-        _startYear = State(initialValue: UserManager.shared.startYear)
-    }
-
     public var body: some View {
-        VStack {
-            MainAppOdometerView(distance: totalDistance, useImperialUnits: useImperialUnits, startYear: startYear)
-                .frame(width: 338, height: 158)
-                .background(Color(hex: 0xf6f6f6))
-                .cornerRadius(8)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Odometer")
-                    .font(.custom("BodoniModa18pt-Italic", size: 24))
-                    .padding(8)
-                ScrollView(.vertical, showsIndicators: true) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text("The Odometer is an art piece that visualizes your total \(useImperialUnits ? "miles" : "kilometers") traveled since \(String(format: "%d", startYear)).\nIn order to use this piece, you must share access to your health data.")
-                            .font(.system(size: 17))
-                            .padding(8)
-                        Text("Customize")
-                            .font(.custom("BodoniModa18pt-Italic", size: 24))
-                            .padding(8)
-                        HStack(alignment: .top, spacing: 0) {
-                            VStack(spacing: 8) {
-                                Text("Imperial Units")
-                                    .font(.system(size: 17))
-                                Toggle("", isOn: $useImperialUnits)
-                                    .labelsHidden()
-                            }
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .frame(height: 100, alignment: .center)
-                            
-                            VStack(spacing: 8) {
-                                Text("Start Year")
-                                    .font(.system(size: 17))
-                                Picker("Start Year", selection: $startYear) {
-                                    ForEach(availableYears, id: \.self) { year in
-                                        Text(String(year)).tag(year)
+        ZStack {
+            if isLoading {
+                ProgressView()
+                    .scaleEffect(1.5)
+                    .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: 0x333333)))
+            } else {
+                VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        MainAppOdometerView(distance: totalDistance, useImperialUnits: useImperialUnits, startYear: startYear)
+                            .frame(maxWidth: .infinity, alignment: .topLeading)
+                            .frame(height: 170, alignment: .topLeading)
+                            .background(Color(hex: 0xf6f6f6))
+                            .cornerRadius(8)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Odometer")
+                                .font(.custom("BodoniModa18pt-Italic", size: 24))
+                                .padding(8)
+                            ScrollView(.vertical, showsIndicators: true) {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    Text("The Odometer is an art piece that visualizes your total \(useImperialUnits ? "miles" : "kilometers") traveled since \(String(format: "%d", startYear)).\nIn order to use this piece, you must share access to your health data.")
+                                        .font(.system(size: 17))
+                                        .padding(8)
+                                    Text("Customize")
+                                        .font(.custom("BodoniModa18pt-Italic", size: 24))
+                                        .padding(8)
+                                    HStack(alignment: .top, spacing: 0) {
+                                        VStack(spacing: 8) {
+                                            Text("Imperial Units")
+                                                .font(.system(size: 17))
+                                            Toggle("", isOn: $useImperialUnits)
+                                                .labelsHidden()
+                                        }
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                        .frame(height: 100, alignment: .center)
+                                        
+                                        VStack(spacing: 8) {
+                                            Text("Start Year")
+                                                .font(.system(size: 17))
+                                            Picker("Start Year", selection: $startYear) {
+                                                ForEach(earliestYear...Calendar.current.component(.year, from: Date()), id: \.self) { year in
+                                                    Text(String(year)).tag(year)
+                                                }
+                                            }
+                                            .pickerStyle(MenuPickerStyle())
+                                        }
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                        .frame(height: 100, alignment: .center)
                                     }
                                 }
-                                .pickerStyle(MenuPickerStyle())
-                                .disabled(availableYears.isEmpty)
                             }
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .frame(height: 100, alignment: .center)
                         }
                     }
+                    .padding(16)
+                    .background(Color(hex: 0xfffef7))
+                    .padding(1)
+                    .offset(y: 72)
                 }
+                .frame(maxWidth: UIScreen.main.bounds.width, alignment: .topLeading)
+                .ignoresSafeArea()
             }
-            .padding(16)
-            .background(Color(hex: 0xfffef7))
-            .padding(1)
-            .offset(y: 72)
         }
+        .animation(.easeInOut(duration: 0.3), value: isLoading)
         .onAppear {
+            print("GenArtView appeared")
+            print("UserManager values - startYear: \(UserManager.shared.startYear), useImperialUnits: \(UserManager.shared.useImperialUnits)")
+            print("GenArtView @State values - startYear: \(startYear), useImperialUnits: \(useImperialUnits)")
+            
+            // Check if values are different and update if necessary
+            if startYear != UserManager.shared.startYear {
+                print("Updating startYear to match UserManager")
+                startYear = UserManager.shared.startYear
+            }
+            if useImperialUnits != UserManager.shared.useImperialUnits {
+                print("Updating useImperialUnits to match UserManager")
+                useImperialUnits = UserManager.shared.useImperialUnits
+            }
+            
+            requestAuthorization()
             fetchEarliestRecordedYear()
             fetchTotalDistanceSince2024()
-            requestAuthorization()
         }
-        .onChange(of: useImperialUnits) { newValue in
+        .onChange(of: useImperialUnits) { oldValue, newValue in
+            print("useImperialUnits changed from \(oldValue) to \(newValue)")
             UserManager.shared.useImperialUnits = newValue
             fetchTotalDistanceSince2024()
+            refreshWidget()
         }
-        .onChange(of: startYear) { newValue in
+        .onChange(of: startYear) { oldValue, newValue in
+            print("startYear changed in view from \(oldValue) to \(newValue)")
             UserManager.shared.startYear = newValue
+            print("UserManager startYear after change: \(UserManager.shared.startYear)")
             fetchTotalDistanceSince2024()
+            refreshWidget()
         }
     }
 
+     private func refreshWidget() {
+        WidgetCenter.shared.reloadAllTimelines()
+    }
     func requestAuthorization() {
-        let typesToShare: Set = [HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!]
-        let typesToRead: Set = [HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!]
-        
-        healthStore.requestAuthorization(toShare: typesToShare, read: typesToRead) { (success, error) in
+        let distanceType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
+        let typesToRead: Set = [distanceType]
+
+        healthStore.requestAuthorization(toShare: [], read: typesToRead) { success, error in
             if success {
-                print("Authorization successful")
-                self.fetchTotalDistanceSince2024()
+                print("HealthKit Authorization Success")
             } else {
-                if let error = error {
-                    print("Authorization failed with error: \(error.localizedDescription)")
-                }
+                print("HealthKit Authorization Failed: \(error?.localizedDescription ?? "Unknown error")")
             }
         }
     }
 
     func fetchEarliestRecordedYear() {
         let distanceType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
-        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
-        let query = HKSampleQuery(sampleType: distanceType, predicate: nil, limit: 1, sortDescriptors: [sortDescriptor]) { (query, samples, error) in
-            if let sample = samples?.first as? HKQuantitySample {
-                let earliestYear = Calendar.current.component(.year, from: sample.startDate)
-                let currentYear = Calendar.current.component(.year, from: Date())
-                DispatchQueue.main.async {
-                    self.availableYears = Array(earliestYear...currentYear)
-                    if !self.availableYears.contains(self.startYear) {
-                        self.startYear = earliestYear
-                    }
+        
+        let query = HKSampleQuery(sampleType: distanceType, predicate: nil, limit: 1, sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]) { _, samples, error in
+            DispatchQueue.main.async {
+                guard let earliestSample = samples?.first as? HKQuantitySample else {
+                    print("Failed to fetch earliest sample: \(error?.localizedDescription ?? "Unknown error")")
+                    return
                 }
+                
+                let year = Calendar.current.component(.year, from: earliestSample.startDate)
+                self.earliestYear = year
             }
         }
+        
         healthStore.execute(query)
     }
 
     func fetchTotalDistanceSince2024() {
         let distanceType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
-        let startDate = Calendar.current.date(from: DateComponents(year: startYear, month: 1, day: 1))!
+        
+        var components = DateComponents()
+        components.year = startYear
+        components.month = 1
+        components.day = 1
+        let startDate = Calendar.current.date(from: components)!
+        
         let predicate = HKQuery.predicateForSamples(withStart: startDate, end: Date(), options: .strictStartDate)
         
         let query = HKStatisticsQuery(quantityType: distanceType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, error in
-            guard let result = result, let sum = result.sumQuantity() else {
-                print("Failed to fetch total distance")
-                return
-            }
-            
             DispatchQueue.main.async {
-                let distanceInMeters = sum.doubleValue(for: HKUnit.meter())
-                self.totalDistance = self.useImperialUnits ? distanceInMeters / 1609.34 : distanceInMeters / 1000
+                guard let result = result, let sum = result.sumQuantity() else {
+                    print("Failed to fetch distance: \(error?.localizedDescription ?? "Unknown error")")
+                    self.isLoading = false
+                    return
+                }
+                
+                let distance = sum.doubleValue(for: useImperialUnits ? HKUnit.mile() : HKUnit.meter())
+                self.totalDistance = useImperialUnits ? distance : distance / 1000 // Convert meters to kilometers
+                print("Total Distance Since \(startYear): \(self.totalDistance) \(useImperialUnits ? "miles" : "kilometers")")
+                self.isLoading = false
             }
         }
-        
+
         healthStore.execute(query)
     }
 }
@@ -140,17 +176,53 @@ public struct MainAppOdometerView: View {
     let distance: Double
     let useImperialUnits: Bool
     let startYear: Int
+    @State private var animationCompletion: Double = 0
+    @State private var odometerImage: UIImage?
     
     public var body: some View {
-        GeometryReader { geometry in
-            Image(uiImage: StepArtRenderer.renderOdometer(
-                distance: distance,
-                unit: useImperialUnits ? "miles" : "km",
-                size: geometry.size,
-                year: startYear
-            ))
-            .resizable()
-            .aspectRatio(contentMode: .fit)
+        Group {
+            if let image = odometerImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } else {
+                ProgressView()
+            }
+        }
+        .onAppear {
+            updateOdometerImage()
+        }
+        .onChange(of: distance) { oldValue, newValue in
+            updateOdometerImage()
+        }
+        .onChange(of: useImperialUnits) { oldValue, newValue in
+            updateOdometerImage()
+        }
+        .onChange(of: startYear) { oldValue, newValue in
+            updateOdometerImage()
         }
     }
+    
+    private func updateOdometerImage() {
+        withAnimation(.easeOut(duration: 2)) {
+            animationCompletion = 1
+        }
+        odometerImage = StepArtRenderer.renderOdometer(
+            distance: distance,
+            unit: useImperialUnits ? "miles" : "km",
+            size: CGSize(width: 338, height: 158),
+            year: startYear
+        )
+    }
+}
+
+public struct Switch1: View {
+    @State private var toggleIsOn_r8s = true
+    public var body: some View {
+        Toggle("", isOn: $toggleIsOn_r8s).labelsHidden().toggleStyle(SwitchToggleStyle(tint: .green))
+    }
+}
+
+#Preview {
+    GenArtView()
 }
