@@ -1,24 +1,24 @@
-//
-//  ContentView.swift
-//  ngenart
-//
-//  Created by Pedro on 8/16/24.
-//
-
 import SwiftUI
+import HealthKit
 
 struct ContentView: View {
+    @State private var isOnboarding = true
+    @State private var userName = ""
+    
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            if isOnboarding {
+                OnboardingView(isOnboarding: $isOnboarding)
+            } else {
+                HomeView()
+            }
         }
-        .padding()
+        .onAppear {
+            if let name = UserDefaults.standard.string(forKey: "userName") {
+                userName = name
+                isOnboarding = false
+            }
+        }
     }
-}
-
-#Preview {
-    ContentView()
 }
