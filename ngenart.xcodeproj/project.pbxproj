@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		EB1BE3042C967F1500C64A0C /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1BE3032C967F1500C64A0C /* OnboardingView.swift */; };
 		EB1BE3062C967FD600C64A0C /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1BE3052C967FD600C64A0C /* UserManager.swift */; };
+		EB218F522CA1FE3C002EC5C4 /* StepArtView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB218F512CA1FE3C002EC5C4 /* StepArtView.swift */; };
 		EB2885032C7037F50054C8D3 /* ngenartApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2885022C7037F50054C8D3 /* ngenartApp.swift */; };
 		EB2885052C7037F50054C8D3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2885042C7037F50054C8D3 /* ContentView.swift */; };
 		EB2885072C7037F80054C8D3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB2885062C7037F80054C8D3 /* Assets.xcassets */; };
@@ -136,6 +137,7 @@
 /* Begin PBXFileReference section */
 		EB1BE3032C967F1500C64A0C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		EB1BE3052C967FD600C64A0C /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
+		EB218F512CA1FE3C002EC5C4 /* StepArtView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepArtView.swift; sourceTree = "<group>"; };
 		EB2884FF2C7037F50054C8D3 /* ngenart.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ngenart.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB2885022C7037F50054C8D3 /* ngenartApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ngenartApp.swift; sourceTree = "<group>"; };
 		EB2885042C7037F50054C8D3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -273,6 +275,7 @@
 				EB1BE3032C967F1500C64A0C /* OnboardingView.swift */,
 				EB2885042C7037F50054C8D3 /* ContentView.swift */,
 				EBA8A8602C93726E00E895FA /* GenArtView.swift */,
+				EB218F512CA1FE3C002EC5C4 /* StepArtView.swift */,
 				EB367ABC2C9A42A80073F913 /* Template */,
 				EBC410402C76E6A300744885 /* Permissions */,
 				EBC4103C2C76E2FD00744885 /* StandardTextModifier.swift */,
@@ -607,6 +610,7 @@
 				EBA8A8632C9392FB00E895FA /* StepArtRender.swift in Sources */,
 				EB367AC02C9A42DB0073F913 /* TemplateArtView.swift in Sources */,
 				EBA8A8612C93726E00E895FA /* GenArtView.swift in Sources */,
+				EB218F522CA1FE3C002EC5C4 /* StepArtView.swift in Sources */,
 				EBC2C9552C9666E20099DCDF /* HomeView.swift in Sources */,
 				EBC410422C76E6EA00744885 /* LocationManager.swift in Sources */,
 				EBC2C9582C9667610099DCDF /* Extensions.swift in Sources */,
