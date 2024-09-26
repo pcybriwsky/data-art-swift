@@ -63,7 +63,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         queue.maxConcurrentOperationCount = 1
         
         let operation = BlockOperation {
-            let genArtView = GenArtView()
+//            let genArtView = GenArtView()
 //            genArtView.fetchTotalDistanceSince2024()
         }
         

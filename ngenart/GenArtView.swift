@@ -2,12 +2,14 @@ import SwiftUI
 import HealthKit
 import WidgetKit
 
+@available(iOS 16.0, *)
 public struct GenArtView: View {
     @State private var totalDistance: Double = 0
     @State private var useImperialUnits: Bool = UserManager.shared.useImperialUnits
     @State private var startYear: Int = UserManager.shared.startYear
     @State private var earliestYear: Int = Calendar.current.component(.year, from: Date())
     @State private var isLoading: Bool = true
+    @State private var odometerImage: UIImage?
     
     let healthStore = HKHealthStore()
 
@@ -25,6 +27,22 @@ public struct GenArtView: View {
                             .frame(height: 170, alignment: .topLeading)
                             .background(Color(hex: 0xf6f6f6))
                             .cornerRadius(8)
+                            .onChange(of: totalDistance) { oldValue, newValue in
+                                Task { @MainActor in
+                                    captureOdometerImage()
+                                }
+                            }
+                        
+                        if let image = odometerImage {
+                            ShareLink(item: Image(uiImage: image), preview: SharePreview("My Odometer", image: Image(uiImage: image))) {
+                                Text("Share Odometer")
+                            }
+                            .padding()
+                        } else {
+                            Text("Odometer image not available")
+                                .foregroundColor(.red)
+                                .padding()
+                        }
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Odometer")
                                 .font(.custom("BodoniModa18pt-Italic", size: 24))
@@ -92,6 +110,9 @@ public struct GenArtView: View {
             requestAuthorization()
             fetchEarliestRecordedYear()
             fetchTotalDistanceSince2024()
+            Task { @MainActor in
+                captureOdometerImage()
+            }
         }
         .onChange(of: useImperialUnits) { oldValue, newValue in
             print("useImperialUnits changed from \(oldValue) to \(newValue)")
@@ -105,6 +126,41 @@ public struct GenArtView: View {
             print("UserManager startYear after change: \(UserManager.shared.startYear)")
             fetchTotalDistanceSince2024()
             refreshWidget()
+        }
+        .onChange(of: totalDistance) { oldValue, newValue in
+            print("Total distance changed from \(oldValue) to \(newValue)")
+            Task { @MainActor in
+                captureOdometerImage()
+            }
+        }
+    }
+
+    @MainActor
+    private func captureOdometerImage() {
+        if totalDistance == 0 {
+            print("Total distance is 0, skipping image capture")
+            return
+        }
+        
+        let renderer = ImageRenderer(content: MainAppOdometerView(distance: totalDistance, useImperialUnits: useImperialUnits, startYear: startYear))
+        
+        // Increase the scale factor to 10x
+         renderer.scale = 16.0 * UIScreen.main.scale
+    
+    // Set the proposedSize to 16x the original size
+    renderer.proposedSize = ProposedViewSize(width: 5408, height: 2528) // 16x the original size
+    
+        
+        if let uiImage = renderer.uiImage {
+            // Convert to lossless PNG format
+            if let pngData = uiImage.pngData(), let pngImage = UIImage(data: pngData) {
+                self.odometerImage = pngImage
+                print("Image captured successfully in PNG format at 10x resolution")
+            } else {
+                print("Failed to convert image to PNG")
+            }
+        } else {
+            print("Failed to capture image")
         }
     }
 

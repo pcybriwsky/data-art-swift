@@ -8,13 +8,13 @@ let artPieces: [ArtPiece] = [
         subtitle: "See how far you've walked",
         imageURL: "https://images.unsplash.com/photo-1723843038784-ba892b252323?ixid=M3w4OTk0OHwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyNTU2MDA1NXw&ixlib=rb-4.0.3",
         destinationView: AnyView(GenArtView()),
-        description: "null"
+        description: "null" 
     ),
     ArtPiece(
-        title: "Placeholder",
-        subtitle: "See more data",
+        title: "Step Count",
+        subtitle: "Second piece",
         imageURL: "https://images.unsplash.com/photo-1722345901893-0c12056b464e?ixid=M3w4OTk0OHwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyNTU1OTY2Nnw&ixlib=rb-4.0.3",
-        destinationView: AnyView(GenArtView()),
+        destinationView: AnyView(StepArtView()),
         description: ""
     ),
     ArtPiece(
