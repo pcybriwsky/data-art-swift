@@ -62,17 +62,19 @@ var body: some View {
                             .frame(height: 50, alignment: .leading)
                             .clipped()
                     }
+                    
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(alignment: .top, spacing: 48) {
+                        HStack(alignment: .top, spacing: 8) {
                             ForEach(Array(artPieces.enumerated()), id: \.element.id) { index, piece in
                                 CardView(artPiece: piece)
-                                    .frame(width: 329, height: 500)
+                                    .frame(width: UIScreen.main.bounds.width * 0.8, height: 500)
                                     .scaleEffect(0.85)
                             }
                         }
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, 8)
                     }
                     .frame(height: 500)
+                
                     VStack(alignment: .leading, spacing:0) {}
                         .frame(maxWidth: .infinity, alignment: .topLeading)
                         .frame(height: 100, alignment: .topLeading)
@@ -125,14 +127,11 @@ struct CardView: View {
 
     func body(content: Content) -> some View {
         content
-            .rotation3DEffect(.degrees(rotationY * 10), axis: (x: 1, y: 0, z: 0))
-            .rotation3DEffect(.degrees(rotationX * 10), axis: (x: 0, y: 1, z: 0))
-            .rotation3DEffect(.degrees(rotationZ * 10), axis: (x: 0, y: 0, z: 1))
+            .rotation3DEffect(.degrees(rotationY * 5), axis: (x: 1, y: 0, z: 0))
+            .rotation3DEffect(.degrees(rotationX * 5), axis: (x: 0, y: 1, z: 0))
+            .rotation3DEffect(.degrees(rotationZ * 5), axis: (x: 0, y: 0, z: 1))
     }
 }
-
-
-
     let artPiece: ArtPiece
     
     @GestureState private var isTapped = false

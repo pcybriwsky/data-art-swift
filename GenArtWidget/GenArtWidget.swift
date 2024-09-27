@@ -6,14 +6,14 @@ struct Provider: TimelineProvider {
     let healthStore = HKHealthStore()
     
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), distance: 0, useImperialUnits: UserManager.shared.useImperialUnits, year: UserManager.shared.startYear)
+        SimpleEntry(date: Date(), distance: 0, useImperialUnits: UserManager.shared.useImperialUnits, year: UserManager.shared.startYear, endYear: UserManager.shared.endYear)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
         let useImperialUnits = UserManager.shared.useImperialUnits
         let startYear = UserManager.shared.startYear
         fetchDistanceSince(year: startYear, useImperialUnits: useImperialUnits) { distance in
-            let entry = SimpleEntry(date: Date(), distance: distance, useImperialUnits: useImperialUnits, year: startYear)
+            let entry = SimpleEntry(date: Date(), distance: distance, useImperialUnits: useImperialUnits, year: startYear, endYear: UserManager.shared.endYear)
             completion(entry)
         }
     }
@@ -22,7 +22,7 @@ struct Provider: TimelineProvider {
         let useImperialUnits = UserManager.shared.useImperialUnits
         let startYear = UserManager.shared.startYear
         fetchDistanceSince(year: startYear, useImperialUnits: useImperialUnits) { distance in
-            let entry = SimpleEntry(date: Date(), distance: distance, useImperialUnits: useImperialUnits, year: startYear)
+            let entry = SimpleEntry(date: Date(), distance: distance, useImperialUnits: useImperialUnits, year: startYear, endYear: UserManager.shared.endYear)
             let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: Date())!
             let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
             completion(timeline)
@@ -61,6 +61,7 @@ struct SimpleEntry: TimelineEntry {
     let distance: Double
     let useImperialUnits: Bool
     let year: Int
+    let endYear: Int
 }
 
 struct GenArtWidgetEntryView : View {
@@ -74,7 +75,9 @@ struct GenArtWidgetEntryView : View {
                 distance: entry.distance,
                 unit: entry.useImperialUnits ? "miles" : "km",
                 size: widgetSize,
-                year: entry.year
+                year: entry.year,
+                endYear: entry.endYear
+                
             ))
             .resizable()
             .aspectRatio(contentMode: .fit)
@@ -110,6 +113,6 @@ struct GenArtWidget: Widget {
 }
 
 #Preview {
-    GenArtWidgetEntryView(entry: SimpleEntry(date: Date(), distance: 236.9, useImperialUnits: true, year: 2024))
+    GenArtWidgetEntryView(entry: SimpleEntry(date: Date(), distance: 236.9, useImperialUnits: true, year: 2024, endYear: 2024))
         .previewContext(WidgetPreviewContext(family: .systemMedium))
 }

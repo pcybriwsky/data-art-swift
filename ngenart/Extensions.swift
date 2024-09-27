@@ -1,11 +1,25 @@
 import SwiftUI
 
+extension UIColor {
+    convenience init(hex: Int, alpha: CGFloat = 1.0) {
+        self.init(
+            red: CGFloat((hex >> 16) & 0xFF) / 255.0,
+            green: CGFloat((hex >> 8) & 0xFF) / 255.0,
+            blue: CGFloat(hex & 0xFF) / 255.0,
+            alpha: alpha
+        )
+    }
+}
+
 extension Color {
-    init(hex: Int, alpha: Double = 1.0) {
-        let red = Double((hex & 0xff0000) >> 16) / 255.0
-        let green = Double((hex & 0xff00) >> 8) / 255.0
-        let blue = Double((hex & 0xff) >> 0) / 255.0
-        self.init(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
+    init(hex: UInt, alpha: Double = 1) {
+        self.init(
+            .sRGB,
+            red: Double((hex >> 16) & 0xff) / 255,
+            green: Double((hex >> 08) & 0xff) / 255,
+            blue: Double((hex >> 00) & 0xff) / 255,
+            opacity: alpha
+        )
     }
 }
 
@@ -21,6 +35,17 @@ struct SizeCalculator: ViewModifier {
         )
     }
 }
+
+extension Color {
+    init(hex: UInt) {
+        self.init(
+            red: Double((hex >> 16) & 0xff) / 255,
+            green: Double((hex >> 08) & 0xff) / 255,
+            blue: Double((hex >> 00) & 0xff) / 255
+        )
+    }
+}
+
 
 struct ArtPiece: Identifiable {
     let id = UUID()
