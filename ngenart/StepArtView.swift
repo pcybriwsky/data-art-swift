@@ -1,6 +1,8 @@
 import SwiftUI
 import HealthKit
 import WebKit
+import UniformTypeIdentifiers
+
 
 struct StepArtView: View {
     @State private var stepsThisYear: [Int] = []
@@ -192,30 +194,50 @@ struct StepArtView: View {
         healthStore.execute(query)
     }
 
-    private var p5Sketch: String {
-    """
+var p5Sketch: String {
+    listBundleContents()
+    
+    let fontBase64 = readFileAsBase64("BodoniModa18pt-Italic.ttf") ?? ""
+    let imageBase64 = readFileAsBase64("favicon-32x32.png") ?? ""
+    
+    return """
     <!DOCTYPE html>
     <html>
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+        <style>
+            @font-face {
+                font-family: 'CustomFont';
+                src: url(data:font/truetype;charset=utf-8;base64,\(fontBase64)) format('truetype');
+            }
+            body {
+                font-family: 'CustomFont', sans-serif;
+            }
+        </style>
     </head>
     <body style="margin:0; padding:0;">
         <script>
-            const totalSteps = \(totalSteps);
-            
+            let img;
+            function preload() {
+                img = loadImage('data:image/png;base64,\(imageBase64)');
+            }
             function setup() {
                 createCanvas(windowWidth, windowHeight);
                 textAlign(CENTER, CENTER);
                 textSize(24);
+                noLoop();
+                
             }
 
             function draw() {
                 background(220);
-                fill(255, 0, 0);
-                ellipse(width/2, height/2, 50, 50);
-                
+                if (img) {
+                    image(img, 0, 0, width, height);
+                }
                 fill(0);
-                text(`Total Steps: ${totalSteps}`, width/2, height/2 + 50);
+                text('Total Steps: \(totalSteps)', width/2, height/2);
             }
 
             function windowResized() {
@@ -228,17 +250,18 @@ struct StepArtView: View {
 }
 }
 
-
-
-
 struct P5WebView: UIViewRepresentable {
     let htmlString: String
     let onWebViewLoaded: (WKWebView) -> Void
 
     func makeUIView(context: Context) -> WKWebView {
-        let webView = WKWebView()
+        let configuration = WKWebViewConfiguration()
+        configuration.defaultWebpagePreferences.allowsContentJavaScript = true
+        
+        let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
-        webView.tag = 100 // Add a tag to identify the WebView
+        webView.tag = 100
+        
         return webView
     }
 
@@ -260,9 +283,54 @@ struct P5WebView: UIViewRepresentable {
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             parent.onWebViewLoaded(webView)
         }
+
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            print("WebView navigation failed: \(error.localizedDescription)")
+        }
+
+        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+            print("WebView provisional navigation failed: \(error.localizedDescription)")
+        }
     }
 }
 
+func readFileAsBase64(_ filename: String) -> String? {
+    print("Attempting to read file: \(filename)")
+    
+    // Try to find the file in the main bundle
+    if let filePath = Bundle.main.path(forResource: filename, ofType: nil) {
+        print("File found at path: \(filePath)")
+        do {
+            let data = try Data(contentsOf: URL(fileURLWithPath: filePath))
+            return data.base64EncodedString()
+        } catch {
+            print("Error reading file: \(error.localizedDescription)")
+        }
+    } else {
+        print("File not found in main bundle: \(filename)")
+    }
+    
+    return nil
+}
+
+func listBundleContents() {
+    guard let resourcePath = Bundle.main.resourcePath else {
+        print("Unable to access resource path")
+        return
+    }
+    
+    do {
+        let fileManager = FileManager.default
+        let items = try fileManager.contentsOfDirectory(atPath: resourcePath)
+        
+        print("Contents of app bundle:")
+        for item in items {
+            print("- \(item)")
+        }
+    } catch {
+        print("Error listing bundle contents: \(error.localizedDescription)")
+    }
+}
 
 
 

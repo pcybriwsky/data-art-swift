@@ -23,6 +23,7 @@
 		EB367AC72C9A57210073F913 /* GenArtWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA8A8502C935F0D00E895FA /* GenArtWidget.swift */; };
 		EB367AC82C9A57270073F913 /* GenArtView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA8A8602C93726E00E895FA /* GenArtView.swift */; };
 		EB367AC92C9A5BA60073F913 /* ngenart.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = EB2885082C7037F80054C8D3 /* ngenart.entitlements */; };
+		EB5ACFAF2CA8C6140096BD50 /* favicon-32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5ACFAE2CA8C6140096BD50 /* favicon-32x32.png */; };
 		EB9A99572C9CC4290013162D /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9A99562C9CC4290013162D /* ThemeManager.swift */; };
 		EB9A99582C9CC5EA0013162D /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9A99562C9CC4290013162D /* ThemeManager.swift */; };
 		EBA8A8482C935F0D00E895FA /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBA8A8472C935F0D00E895FA /* WidgetKit.framework */; };
@@ -152,6 +153,7 @@
 		EB367ABD2C9A42BE0073F913 /* TemplateArtRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateArtRenderer.swift; sourceTree = "<group>"; };
 		EB367ABF2C9A42DB0073F913 /* TemplateArtView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateArtView.swift; sourceTree = "<group>"; };
 		EB367AC52C9A458F0073F913 /* TemplateWidget.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TemplateWidget.md; sourceTree = "<group>"; };
+		EB5ACFAE2CA8C6140096BD50 /* favicon-32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "favicon-32x32.png"; sourceTree = "<group>"; };
 		EB9A99562C9CC4290013162D /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		EBA8A8452C935F0D00E895FA /* GenArtWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GenArtWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBA8A8472C935F0D00E895FA /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -265,6 +267,7 @@
 			isa = PBXGroup;
 			children = (
 				EB2885022C7037F50054C8D3 /* ngenartApp.swift */,
+				EB5ACFAD2CA8C5930096BD50 /* Images */,
 				EBC2C90A2C9652C40099DCDF /* Fonts */,
 				EBA8A8622C9392FB00E895FA /* StepArtRender.swift */,
 				EB1BE3052C967FD600C64A0C /* UserManager.swift */,
@@ -320,6 +323,14 @@
 				EB367AC52C9A458F0073F913 /* TemplateWidget.md */,
 			);
 			path = Template;
+			sourceTree = "<group>";
+		};
+		EB5ACFAD2CA8C5930096BD50 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				EB5ACFAE2CA8C6140096BD50 /* favicon-32x32.png */,
+			);
+			path = Images;
 			sourceTree = "<group>";
 		};
 		EBA8A8462C935F0D00E895FA /* Frameworks */ = {
@@ -518,6 +529,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB367AC92C9A5BA60073F913 /* ngenart.entitlements in Resources */,
+				EB5ACFAF2CA8C6140096BD50 /* favicon-32x32.png in Resources */,
 				EBC2C92A2C9653320099DCDF /* BodoniModa_9pt-Italic.ttf in Resources */,
 				EBC2C9322C9653320099DCDF /* BodoniModa_18pt-Black.ttf in Resources */,
 				EBC2C9462C9653320099DCDF /* BodoniModa_18pt-Bold.ttf in Resources */,
