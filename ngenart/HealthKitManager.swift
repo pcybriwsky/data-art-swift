@@ -3,10 +3,18 @@ import SwiftUI
 
 class HealthKitManager: NSObject, ObservableObject {
     private let healthStore = HKHealthStore()
-    
+    @Published var isAuthorized: Bool = false
     // Check if HealthKit is available on this device
     func isHealthDataAvailable() -> Bool {
         return HKHealthStore.isHealthDataAvailable()
+    }
+
+    func checkAuthorizationStatus() {
+        let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+        let status = healthStore.authorizationStatus(for: stepType)
+        DispatchQueue.main.async {
+            self.isAuthorized = (status == .sharingAuthorized)
+        }
     }
     
     // Request HealthKit authorization
@@ -18,6 +26,7 @@ class HealthKitManager: NSObject, ObservableObject {
         
         healthStore.requestAuthorization(toShare: [], read: readTypes) { success, error in
             DispatchQueue.main.async {
+                self.isAuthorized = success
                 completion(success, error)
             }
         }

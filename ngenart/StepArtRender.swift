@@ -101,7 +101,7 @@ public class StepArtRenderer: ObservableObject {
         }
     }
 
-    public static func animateOdometer(distance: Double, unit: String, size: CGSize, year: Int, endYear: Int) -> some View {
+    public static func animatedOdometer(distance: Double, unit: String, size: CGSize, year: Int, endYear: Int) -> some View {
         AnimatedOdometerView(value: distance, 
                              size: size, 
                              accentColor: UIColor(hex: 0xFF5733), 

@@ -83,7 +83,7 @@ struct GenArtWidgetEntryView : View {
             .aspectRatio(contentMode: .fit)
         }
         .containerBackground(for: .widget) {
-            Color.clear // This sets the container background
+            Color(hex: 0x0a0a0a) // This sets the container background
         }
     }
     

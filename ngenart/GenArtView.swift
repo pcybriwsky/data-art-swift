@@ -23,13 +23,7 @@ public struct GenArtView: View {
             } else {
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading, spacing: 8) {
-                        StepArtRenderer.animatedOdometer(
-                distance: totalDistance,
-                unit: useImperialUnits ? "miles" : "km",
-                size: CGSize(width: 338, height: 158),
-                year: startYear,
-                endYear: endYear
-            )
+                        MainAppOdometerView(distance: totalDistance, useImperialUnits: useImperialUnits, startYear: startYear, endYear: endYear)
                         .frame(maxWidth: .infinity, alignment: .topLeading)
                         .cornerRadius(8)
                         .onChange(of: totalDistance) { oldValue, newValue in
@@ -332,7 +326,7 @@ public struct MainAppOdometerView: View {
         withAnimation(.easeOut(duration: 2)) {
             animationCompletion = 1
         }
-        odometerImage = StepArtRenderer.animateOdometer(
+        odometerImage = StepArtRenderer.renderOdometer(
             distance: distance,
             unit: useImperialUnits ? "miles" : "km",
             size: CGSize(width: 338, height: 158),
