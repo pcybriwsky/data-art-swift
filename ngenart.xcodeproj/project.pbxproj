@@ -24,6 +24,7 @@
 		EB367AC82C9A57270073F913 /* GenArtView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA8A8602C93726E00E895FA /* GenArtView.swift */; };
 		EB367AC92C9A5BA60073F913 /* ngenart.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = EB2885082C7037F80054C8D3 /* ngenart.entitlements */; };
 		EB5ACFAF2CA8C6140096BD50 /* favicon-32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5ACFAE2CA8C6140096BD50 /* favicon-32x32.png */; };
+		EB5ACFB12CA8CDDF0096BD50 /* p5Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ACFB02CA8CDDF0096BD50 /* p5Extensions.swift */; };
 		EB9A99572C9CC4290013162D /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9A99562C9CC4290013162D /* ThemeManager.swift */; };
 		EB9A99582C9CC5EA0013162D /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9A99562C9CC4290013162D /* ThemeManager.swift */; };
 		EBA8A8482C935F0D00E895FA /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBA8A8472C935F0D00E895FA /* WidgetKit.framework */; };
@@ -154,6 +155,7 @@
 		EB367ABF2C9A42DB0073F913 /* TemplateArtView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateArtView.swift; sourceTree = "<group>"; };
 		EB367AC52C9A458F0073F913 /* TemplateWidget.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TemplateWidget.md; sourceTree = "<group>"; };
 		EB5ACFAE2CA8C6140096BD50 /* favicon-32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "favicon-32x32.png"; sourceTree = "<group>"; };
+		EB5ACFB02CA8CDDF0096BD50 /* p5Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = p5Extensions.swift; sourceTree = "<group>"; };
 		EB9A99562C9CC4290013162D /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		EBA8A8452C935F0D00E895FA /* GenArtWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GenArtWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBA8A8472C935F0D00E895FA /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -274,6 +276,7 @@
 				EBC2C9542C9666E20099DCDF /* HomeView.swift */,
 				EB9A99562C9CC4290013162D /* ThemeManager.swift */,
 				EBC446F22C9C8073002CDBEA /* SettingsView.swift */,
+				EB5ACFB02CA8CDDF0096BD50 /* p5Extensions.swift */,
 				EBC2C9572C9667610099DCDF /* Extensions.swift */,
 				EB1BE3032C967F1500C64A0C /* OnboardingView.swift */,
 				EB2885042C7037F50054C8D3 /* ContentView.swift */,
@@ -620,6 +623,7 @@
 				EBC446F32C9C8073002CDBEA /* SettingsView.swift in Sources */,
 				EB1BE3062C967FD600C64A0C /* UserManager.swift in Sources */,
 				EBA8A8632C9392FB00E895FA /* StepArtRender.swift in Sources */,
+				EB5ACFB12CA8CDDF0096BD50 /* p5Extensions.swift in Sources */,
 				EB367AC02C9A42DB0073F913 /* TemplateArtView.swift in Sources */,
 				EBA8A8612C93726E00E895FA /* GenArtView.swift in Sources */,
 				EB218F522CA1FE3C002EC5C4 /* StepArtView.swift in Sources */,
