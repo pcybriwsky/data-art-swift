@@ -6,18 +6,18 @@ import SwiftUI
 
 extension Bundle {
     func readFileAsBase64(_ filename: String) -> String? {
-        print("Attempting to read file: \(filename)")
+        // print("Attempting to read file: \(filename)")
         
         if let filePath = self.path(forResource: filename, ofType: nil) {
-            print("File found at path: \(filePath)")
+            // print("File found at path: \(filePath)")
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: filePath))
                 return data.base64EncodedString()
             } catch {
-                print("Error reading file: \(error.localizedDescription)")
+                // print("Error reading file: \(error.localizedDescription)")
             }
         } else {
-            print("File not found in main bundle: \(filename)")
+            // print("File not found in main bundle: \(filename)")
         }
         
         return nil
@@ -46,6 +46,7 @@ extension Bundle {
 struct P5WebView: UIViewRepresentable {
     let htmlString: String
     let onWebViewLoaded: (WKWebView) -> Void
+    
 
     func makeUIView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
@@ -83,6 +84,20 @@ struct P5WebView: UIViewRepresentable {
 
         func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
             print("WebView provisional navigation failed: \(error.localizedDescription)")
+        }
+    }
+}
+
+extension Encodable {
+    func p5JSONEncoder() -> String {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .millisecondsSince1970
+        do {
+            let jsonData = try encoder.encode(self)
+            return String(data: jsonData, encoding: .utf8) ?? "[]"
+        } catch {
+            print("Error encoding data for p5.js: \(error)")
+            return "[]"
         }
     }
 }

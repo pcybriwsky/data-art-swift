@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 
 
 struct StepArtView: View {
+    @StateObject private var healthKitManager = HealthKitManager()
     @State private var stepsThisYear: [Int] = []
     @State private var totalSteps: Int = 0
     @State private var averageStepsPerDay: Int = 0
@@ -12,32 +13,67 @@ struct StepArtView: View {
     @State private var isLoading: Bool = true
     @State private var webViewImage: UIImage?
     @State private var isCapturingImage: Bool = false
-    @State private var hasCaptueredImage: Bool = false
+    @State private var hasCapturedImage: Bool = false
     @State private var webViewLoaded: Bool = false
+    @State private var yearlyStepData: [HealthKitManager.YearlyStepData] = []
+    @State private var detailedStepData: [HealthKitManager.DetailedStepData] = []
+    @State private var errorMessage: String?
+    @State private var consoleLog: String = ""
+    @State private var userName: String = UserDefaults.standard.string(forKey: "userName") ?? "tester"    
+    @State private var selectedTimeRange: TimeRange = .week
+    @State private var pieceTitle: String = "Step Ticker"
+    @State private var shouldCaptureImage: Bool = false
+    @State private var captureTimer: Timer?
     
+    
+    
+
+
+    enum TimeRange: String, CaseIterable {
+        case week = "1W"
+        case month = "1M"
+        case threeMonths = "3M"
+        case sixMonths = "6M"
+        case yearToDate = "YTD"
+        case oneYear = "1Y"
+        case fiveYears = "5Y"
+        case allTime = "Max"
+    }
+
     
     let healthStore = HKHealthStore()
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
                 if isLoading {
                     ProgressView()
                 } else {
                      VStack {
                          P5WebView(htmlString: p5Sketch, onWebViewLoaded: { webView in
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                self.webViewLoaded = true
-                                                         }
+                                self.webViewLoaded = true    
+                            }
                         })
-                        .frame(height: 300)
+                        .frame(height: 428)
                         .id(totalSteps)
+                        .cornerRadius(12)
+
+                        HStack {
+                            Picker("Time Range", selection: $selectedTimeRange) {
+                                ForEach(availableTimeRanges, id: \.self) { range in
+                                    Text(range.rawValue).tag(range)
+                                }
+                            }
+                            .pickerStyle(SegmentedPickerStyle())
+                            .padding(.horizontal)
+                        }
 
                         if isCapturingImage {
                             ProgressView("Capturing image...")
                         } else if webViewImage != nil {
                             ShareLink(item: Image(uiImage: webViewImage!), preview: SharePreview("My Step Art", image: Image(uiImage: webViewImage!))) {
-                                Text("Share Step Art")
+                                Text("Share \(pieceTitle)")
                             }
                             .foregroundColor(Color(hex: 0xfffef7))
                             .padding(.horizontal, 20)
@@ -46,70 +82,84 @@ struct StepArtView: View {
                             .cornerRadius(8)
                             .shadow(radius: 5)
                         }
-                    }
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Steps this year: \(totalSteps)")
-                        Text("Steps per day: \(averageStepsPerDay)")
+
                     }
                     
                     .padding(.horizontal)
                     
-                    Text("Step Art")
+                    
+                    Text("\(pieceTitle)")
                         .font(.custom("BodoniModa18pt-Italic", size: 24))
                         .padding(.horizontal)
                     
-                    Text("The Step Art visualizes your total steps taken since \(startYear).\nIn order to use this piece, you must share access to your health data.")
+                    Text("The \(pieceTitle) visualizes your total steps...")
                         .font(.system(size: 17))
                         .padding(.horizontal)
-                    
-                    Text("Customize")
-                        .font(.custom("BodoniModa18pt-Italic", size: 24))
-                        .padding(.horizontal)
-                    
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text("Start Year")
-                            Picker("Start Year", selection: $startYear) {
-                                ForEach(2020...Calendar.current.component(.year, from: Date()), id: \.self) { year in
-                                    Text(String(year)).tag(year)
-                                }
+
+                    Text("Data Input")
+                                .font(.custom("BodoniModa18pt-Italic", size: 17))
+                                .padding(.horizontal)
+
+                        VStack {
+                            VStack(alignment: .center, spacing: 8) {
+                                Image(systemName: "figure.walk")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 48, height: 48)  // Increased size to 48x48
+                                    .foregroundColor(Color(hex: 0x0a0a0a))  // Changed color to the red accent color
+                                    .padding(8)
+                                Text("Step Data")
+                                    .font(.system(size: 17))
+                                    .padding(8)
                             }
-                            .pickerStyle(MenuPickerStyle())
                         }
-                    }
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding()
+                    
+                    // Text("Customize")
+                    //     .font(.custom("BodoniModa18pt-Italic", size: 24))
+                    //     .padding(.horizontal)
+                    
                     .padding(.horizontal)
                 }
             }
             .padding()
         }
         .onAppear {
+            // startPeriodicCapture()
             requestAuthorization()
             fetchStepsData()
+            fetchYearlyStepData()
+            fetchDetailedStepData()
         }
        .onChange(of: startYear) { _, _ in
             fetchStepsData()
-            hasCaptueredImage = false
+            hasCapturedImage = false
             webViewLoaded = false
         }
         .onChange(of: webViewLoaded) { _, newValue in
-            if newValue && !hasCaptueredImage {
+            if newValue && !hasCapturedImage {
                 captureWebViewImage()
             }
         }
+        .onDisappear {
+            // stopPeriodicCapture()
+        }
     }
 
-    // var body: some View {
-       
-    //     .onAppear {
-    //         requestAuthorization()
-    //         fetchStepsData()
-    //     }
-    //     .onChange(of: startYear) { _, _ in
-    //         fetchStepsData()
-    //     }
-    // }
+     private func startPeriodicCapture() {
+        captureTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { _ in
+            captureWebViewImage()
+        }
+    }
 
-   private func captureWebViewImage() {
+    private func stopPeriodicCapture() {
+        captureTimer?.invalidate()
+        captureTimer = nil
+    }
+
+
+    private func captureWebViewImage() {
         guard let window = UIApplication.shared.windows.first,
               let webView = window.viewWithTag(100) as? WKWebView else {
             print("Failed to find WebView")
@@ -125,11 +175,29 @@ struct StepArtView: View {
                 self.isCapturingImage = false
                 if let image = image {
                     self.webViewImage = image
-                    self.hasCaptueredImage = true
+                    self.hasCapturedImage = true
                     print("WebView image captured successfully")
                 } else if let error = error {
                     print("Failed to capture WebView image: \(error.localizedDescription)")
                 }
+            }
+        }
+    }
+
+    var availableTimeRanges: [TimeRange] {
+        let allRanges = TimeRange.allCases
+        let dataStartDate = detailedStepData.last?.dailyData.first?.date ?? Date()
+        let daysSinceStart = Calendar.current.dateComponents([.day], from: dataStartDate, to: Date()).day ?? 0
+
+        return allRanges.filter { range in
+            switch range {
+            case .week: return daysSinceStart >= 7
+            case .month: return daysSinceStart >= 30
+            case .threeMonths: return daysSinceStart >= 90
+            case .sixMonths: return daysSinceStart >= 180
+            case .yearToDate, .oneYear: return daysSinceStart >= 365
+            case .fiveYears: return daysSinceStart >= 1825
+            case .allTime: return true
             }
         }
     }
@@ -139,6 +207,7 @@ struct StepArtView: View {
         healthStore.requestAuthorization(toShare: [], read: [stepType]) { success, error in
             if success {
                 fetchStepsData()
+                fetchYearlyStepData()
             } else if let error = error {
                 print("Authorization failed: \(error.localizedDescription)")
             }
@@ -195,152 +264,297 @@ struct StepArtView: View {
         healthStore.execute(query)
     }
 
-    var p5Sketch: String {
-        Bundle.main.listContents()
-        
-        let fontBase64 = Bundle.main.readFileAsBase64("BodoniModa18pt-Italic.ttf") ?? ""
-        let imageBase64 = Bundle.main.readFileAsBase64("favicon-32x32.png") ?? ""
-        
-        return """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-            <style>
-                @font-face {
-                    font-family: 'CustomFont';
-                    src: url(data:font/truetype;charset=utf-8;base64,\(fontBase64)) format('truetype');
-                }
-                body {
-                    font-family: 'CustomFont', sans-serif;
-                }
-            </style>
-        </head>
-        <body style="margin:0; padding:0;">
-            <script>
-                let img;
-                function preload() {
-                    img = loadImage('data:image/png;base64,\(imageBase64)');
-                }
-                function setup() {
-                    createCanvas(windowWidth, windowHeight);
-                    textAlign(CENTER, CENTER);
-                    textSize(24);
-                    noLoop();
-                }
-
-                function draw() {
-                    background(220);
-                    if (img) {
-                        image(img, 0, 0, width, height);
-                    }
-                    fill(0);
-                    text('Total Steps: \(totalSteps)', width/2, height/2);
-                }
-
-                function windowResized() {
-                    resizeCanvas(windowWidth, windowHeight);
-                }
-            </script>
-        </body>
-        </html>
-        """
+    private func fetchYearlyStepData() {
+        healthKitManager.fetchYearlyStepData { data, error in
+            isLoading = false
+            if let data = data {
+                self.yearlyStepData = data
+            } else if let error = error {
+                self.errorMessage = "Error: \(error.localizedDescription)"
+            }
+        }
     }
+
+    private func fetchDetailedStepData() {
+        healthKitManager.fetchDetailedStepData { data, error in
+            isLoading = false
+            if let data = data {
+                self.detailedStepData = data
+            } else if let error = error {
+                self.errorMessage = "Error: \(error.localizedDescription)"
+            }
+        }
+    }
+
+   var p5Sketch: String {
+    let fontBase64 = Bundle.main.readFileAsBase64("BodoniModa18pt-Italic.ttf") ?? ""
+    let imageBase64 = Bundle.main.readFileAsBase64("favicon-32x32.png") ?? ""
+    let detailedStepDataJSON = detailedStepData.p5JSONEncoder()
+
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+        <style>
+            @font-face {
+                font-family: 'CustomFont';
+                src: url(data:font/truetype;charset=utf-8;base64,\(fontBase64)) format('truetype');
+            }
+            body { font-family: 'CustomFont', sans-serif; }
+        </style>
+    </head>
+    <body style="margin:0; padding:0;">
+        <script>
+            let detailedStepData = \(detailedStepDataJSON);
+            let selectedTimeRange = '\(selectedTimeRange.rawValue)';
+            let userName = '\(userName)';
+
+            function getRoundedBoundaries(min, max) {
+                let range = max - min;
+                let padding = range * 0.1; // 10% padding
+                
+                if (range < 10) {
+                    return [Math.floor(min), Math.ceil(max)];
+                }
+                
+                let lowerBound, upperBound;
+                
+                if (range < 100) {
+                    lowerBound = Math.floor((min - padding) / 10) * 10;
+                    upperBound = Math.ceil((max + padding) / 10) * 10;
+                } else if (range < 1000) {
+                    lowerBound = Math.floor((min - padding) / 50) * 50;
+                    upperBound = Math.ceil((max + padding) / 50) * 50;
+                } else if (range < 10000) {
+                    lowerBound = Math.floor((min - padding) / 100) * 100;
+                    upperBound = Math.ceil((max + padding) / 100) * 100;
+                } else {
+                    lowerBound = Math.floor((min - padding) / 1000) * 1000;
+                    upperBound = Math.ceil((max + padding) / 1000) * 1000;
+                }
+                
+                return [lowerBound, upperBound];
+            }
+
+            function setup() {
+                createCanvas(windowWidth, windowHeight);
+                textAlign(CENTER, CENTER);
+                textSize(12);
+                noLoop();
+            }
+
+            function draw() {
+                background(24);
+                let padding = 50;
+                let graphWidth = width - 2 * padding;
+                let graphHeight = 2 * padding;
+                
+                let filteredData = filterDataByTimeRange(detailedStepData, selectedTimeRange);
+                let rawData = flattenDailyData(detailedStepData);
+
+                let maxSteps = Math.max(...filteredData.map(d => d.steps));
+                let minSteps = Math.min(...filteredData.map(d => d.steps));
+                let averageSteps = Math.round(filteredData.reduce((sum, d) => sum + d.steps, 0) / filteredData.length);
+                totalSteps = calculateTotalSteps(rawData, selectedTimeRange);
+                
+                let [lowerBound, upperBound] = getRoundedBoundaries(minSteps, maxSteps);
+                
+                // Draw axes
+                stroke(221);
+                line(padding, height - padding, width - padding, height - padding); // x-axis
+                line(padding, graphHeight, padding, height - padding); // y-axis
+                
+                // Plot data
+                noFill();
+                stroke("#39743E");
+                beginShape();
+                for (let i = 0; i < filteredData.length; i++) {
+                    let x = map(i, 0, filteredData.length - 1, padding, width - padding);
+                    let y = map(filteredData[i].steps, lowerBound, upperBound, height - padding, graphHeight);
+                    vertex(x, y);
+                    
+                    // Draw data point
+                    fill("#39743E");
+                    ellipse(x, y, 5, 5);
+                    noFill();
+                }
+                endShape();
+                
+                // Add labels
+                fill(221);
+                noStroke();
+                textAlign(LEFT, CENTER);
+                text("Time", width - padding, height - padding);
+                
+                // Add "Steps" label at the top of y-axis, right-aligned
+                textAlign(RIGHT, TOP);
+                text("Steps", padding - 5, graphHeight - 20);
+                
+                // Add tick marks and labels on the right y-axis
+                textAlign(RIGHT, CENTER);
+                for (let i = 0; i <= 5; i++) {
+                    let y = map(i, 0, 5, height - padding, graphHeight);
+                    let stepValue = Math.round(map(i, 0, 5, lowerBound, upperBound));
+                    line(padding, y, padding - 5, y);
+                    text(stepValue.toLocaleString(), padding - 5, y);
+                }
+                
+                // Add title
+                textAlign(RIGHT, CENTER);
+                let aggregationType = 'Daily ';
+                let calculationType = '';
+                if (['3M', '6M', 'YTD', '1Y'].includes(selectedTimeRange)) {
+                    aggregationType = 'Weekly ';
+                    calculationType = 'Average ';
+                } else if (['5Y', 'Max'].includes(selectedTimeRange)) {
+                    aggregationType = 'Monthly ';
+                    calculationType = 'Average ';
+                }
+                let lineHeight = 18;
+                textSize(14);
+                text(userName + "'s " + aggregationType + "Step Ticker", width - lineHeight, lineHeight);
+                textSize(12);
+                text("Total: " + totalSteps.toLocaleString() + " steps", width - lineHeight, lineHeight*2);
+                text(calculationType + "high: " + maxSteps.toLocaleString() + " steps", width - lineHeight, lineHeight*3);
+                text(calculationType + "low: " + minSteps.toLocaleString() + " steps", width - lineHeight, lineHeight*4);
+                text(calculationType + "average: " + averageSteps.toLocaleString() + " steps", width - lineHeight, lineHeight*5);
+
+                
+                // Add start and end dates
+                textSize(12);
+                if (filteredData.length > 0) {
+                    textAlign(LEFT, TOP);
+                    text(formatDate(filteredData[0].date), padding, height - padding + 5);
+                    textAlign(RIGHT, TOP);
+                    text(formatDate(filteredData[filteredData.length - 1].date), width - padding, height - padding + 5);
+                }
+            }
+
+            function calculateTotalSteps(data, range) {
+                let endDate = new Date();
+                let startDate = new Date(endDate);
+                
+                switch (range) {
+                    case '1W': startDate.setDate(endDate.getDate() - 7); break;
+                    case '1M': startDate.setMonth(endDate.getMonth() - 1); break;
+                    case '3M': startDate.setMonth(endDate.getMonth() - 3); break;
+                    case '6M': startDate.setMonth(endDate.getMonth() - 6); break;
+                    case 'YTD': startDate = new Date(endDate.getFullYear(), 0, 1); break;
+                    case '1Y': startDate.setFullYear(endDate.getFullYear() - 1); break;
+                    case '5Y': startDate.setFullYear(endDate.getFullYear() - 5); break;
+                    case 'Max': return data.reduce((sum, d) => sum + d.steps, 0);
+                }
+                
+                return data
+                    .filter(day => new Date(day.date) >= startDate && new Date(day.date) <= endDate)
+                    .reduce((sum, d) => sum + d.steps, 0);
+            }
+
+            function filterDataByTimeRange(data, range) {
+                let endDate = new Date();
+                let startDate = new Date(endDate);
+                
+                switch (range) {
+                    case '1W': startDate.setDate(endDate.getDate() - 7); break;
+                    case '1M': startDate.setMonth(endDate.getMonth() - 1); break;
+                    case '3M': startDate.setMonth(endDate.getMonth() - 3); break;
+                    case '6M': startDate.setMonth(endDate.getMonth() - 6); break;
+                    case 'YTD': startDate = new Date(endDate.getFullYear(), 0, 1); break;
+                    case '1Y': startDate.setFullYear(endDate.getFullYear() - 1); break;
+                    case '5Y': startDate.setFullYear(endDate.getFullYear() - 5); break;
+                    case 'Max': return aggregateDataByMonth(flattenDailyData(data));
+                }
+                
+                let filteredData = flattenDailyData(data).filter(day => new Date(day.date) >= startDate && new Date(day.date) <= endDate);
+                
+                if (['3M', '6M', 'YTD', '1Y'].includes(range)) {
+                    return aggregateDataByWeek(filteredData);
+                } else if (['5Y', 'Max'].includes(range)) {
+                    return aggregateDataByMonth(filteredData);
+                }
+                
+                return filteredData;
+            }
+
+            function aggregateDataByWeek(data) {
+                let weeklyData = [];
+                let currentWeek = [];
+                let currentWeekStart = new Date(data[0].date);
+                currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay()); // Set to start of week (Sunday)
+
+                for (let day of data) {
+                    let dayDate = new Date(day.date);
+                    if (dayDate >= currentWeekStart && dayDate < new Date(currentWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000)) {
+                        currentWeek.push(day);
+                    } else {
+                        if (currentWeek.length > 0) {
+                            let avgSteps = Math.round(currentWeek.reduce((sum, day) => sum + day.steps, 0) / currentWeek.length);
+                            weeklyData.push({ date: currentWeekStart.toISOString(), steps: avgSteps });
+                        }
+                        currentWeekStart = new Date(dayDate.getTime());
+                        currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
+                        currentWeek = [day];
+                    }
+                }
+                
+                // Add the last week if it's not empty
+                if (currentWeek.length > 0) {
+                    let avgSteps = Math.round(currentWeek.reduce((sum, day) => sum + day.steps, 0) / currentWeek.length);
+                    weeklyData.push({ date: currentWeekStart.toISOString(), steps: avgSteps });
+                }
+
+                return weeklyData;
+            }
+
+            function aggregateDataByMonth(data) {
+                let monthlyData = [];
+                let currentMonth = [];
+                let currentMonthStart = new Date(data[0].date);
+                currentMonthStart.setDate(1); // Set to start of month
+
+                for (let day of data) {
+                    let dayDate = new Date(day.date);
+                    if (dayDate.getFullYear() === currentMonthStart.getFullYear() && dayDate.getMonth() === currentMonthStart.getMonth()) {
+                        currentMonth.push(day);
+                    } else {
+                        if (currentMonth.length > 0) {
+                            let avgSteps = Math.round(currentMonth.reduce((sum, day) => sum + day.steps, 0) / currentMonth.length);
+                            monthlyData.push({ date: currentMonthStart.toISOString(), steps: avgSteps });
+                        }
+                        currentMonthStart = new Date(dayDate.getFullYear(), dayDate.getMonth(), 1);
+                        currentMonth = [day];
+                    }
+                }
+                
+                // Add the last month if it's not empty
+                if (currentMonth.length > 0) {
+                    let avgSteps = Math.round(currentMonth.reduce((sum, day) => sum + day.steps, 0) / currentMonth.length);
+                    monthlyData.push({ date: currentMonthStart.toISOString(), steps: avgSteps });
+                }
+
+                return monthlyData;
+            }
+
+            function flattenDailyData(data) {
+                return data.flatMap(yearData => yearData.dailyData)
+                        .sort((a, b) => new Date(a.date) - new Date(b.date));
+            }
+
+            function formatDate(dateString) {
+                let date = new Date(dateString);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+
+            function windowResized() {
+                resizeCanvas(windowWidth, windowHeight);
+                redraw();
+            }
+        </script>
+    </body>
+    </html>
+    """
 }
-
-
-
-
-// struct CircularStepArtView: View {
-//     let steps: [Int] // Array of steps for each day of the year
-//     let startDate: Date
-    
-//     var body: some View {
-//         GeometryReader { geometry in
-//             ZStack {
-//                 let ringOffset: CGFloat = 15.0 // Size of the opening in the center
-                
-//                 // Draw the lines for each day
-//                 ForEach(0..<steps.count, id: \.self) { index in
-//                     let angleDegrees = Double(index) / Double(steps.count) * 360 - 90
-//                     let angle = Angle(degrees: angleDegrees)
-                    
-//                     // Calculate length and ensure it's non-negative
-//                     let calculatedLength = normalizedLength(for: steps[index], in: geometry)
-//                     let length: CGFloat = max(calculatedLength, ringOffset) // Ensure length is non-negative
-                    
-//                     // Calculate the end point of the line
-//                     let endX = cos(angle.radians) * length
-//                     let endY = sin(angle.radians) * length
-                    
-//                     // Calculate the starting point
-//                     let startX = geometry.size.width / 2 + ringOffset * cos(angle.radians)
-//                     let startY = geometry.size.width / 2 + ringOffset * sin(angle.radians)
-
-                    
-                    
-//                     // Draw the line
-//                     Path { path in
-//                         path.move(to: CGPoint(x: startX, y: startY))
-//                         path.addLine(to: CGPoint(x: geometry.size.width / 2 + endX, y: geometry.size.width / 2 + endY))
-//                     }
-//                     .stroke(
-//                         LinearGradient(
-//                             gradient: Gradient(colors: [Color.blue, Color.red]),
-//                             startPoint: .init(x: 0.5, y: 0.5), // Center of the line
-//                             endPoint: .init(x: 0.5 + (endX / length) * 0.5, y: 0.5 + (endY / length) * 0.5) // End of the line
-//                         ),
-//                         lineWidth: 2
-//                     )
-//                 }
-                
-//                 // Month labels
-//                 ForEach(0..<12, id: \.self) { month in
-//                     // Adjust the angle to start from the top (0 degrees) and go clockwise
-//                     let angle = Angle(degrees: Double(month) / 12.0 * 360 - 90) // Offset by 90 degrees
-                    
-//                     let x = cos(angle.radians) * (geometry.size.width / 2 - 30.0)
-//                     let y = sin(angle.radians) * (geometry.size.width / 2 - 30.0)
-                    
-//                     Text(monthAbbreviation(for: month))
-//                         .position(x: geometry.size.width / 2 + x, y: geometry.size.width / 2 + y)
-//                 }
-//             }
-//         }
-//         .frame(height: 400)
-//     }
-    
-//     private func normalizedLength(for stepCount: Int, in geometry: GeometryProxy) -> CGFloat {
-//         let maxSteps = steps.max() ?? 1
-//         return (CGFloat(stepCount) / CGFloat(maxSteps)) * (geometry.size.width / 2 - 40) // Adjust for padding
-//     }
-    
-//     private func gradientColor(for stepCount: Int) -> Color {
-//         let maxSteps = steps.max() ?? 1
-//         let ratio = CGFloat(stepCount) / CGFloat(maxSteps)
-//         return Color.blue.interpolate(to: Color.red, fraction: ratio)
-//     }
-    
-//     private func monthAbbreviation(for month: Int) -> String {
-//         let dateFormatter = DateFormatter()
-//         dateFormatter.dateFormat = "MMM"
-//         let date = Calendar.current.date(from: DateComponents(year: 2000, month: month + 1, day: 1))!
-//         return dateFormatter.string(from: date)
-//     }
-// }
-
-// extension Color {
-//     func interpolate(to color: Color, fraction: CGFloat) -> Color {
-//         let fromComponents = UIColor(self).cgColor.components ?? [0, 0, 0, 0]
-//         let toComponents = UIColor(color).cgColor.components ?? [0, 0, 0, 0]
-        
-//         let red = fromComponents[0] + (toComponents[0] - fromComponents[0]) * fraction
-//         let green = fromComponents[1] + (toComponents[1] - fromComponents[1]) * fraction
-//         let blue = fromComponents[2] + (toComponents[2] - fromComponents[2]) * fraction
-//         let alpha = fromComponents[3] + (toComponents[3] - fromComponents[3]) * fraction
-        
-//         return Color(red: red, green: green, blue: blue, opacity: alpha)
-//     }
-// }
+}
