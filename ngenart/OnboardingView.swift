@@ -7,11 +7,13 @@ struct OnboardingView: View {
     @StateObject private var healthKitManager = HealthKitManager()
     @State private var isLoading: Bool = false
     @State private var allTimeSteps: Double? = nil
+    @State private var firstRecordedStep: Date? = nil
     @State private var currentPage: Int = 0
     @State private var userName: String = ""
     @State private var useImperialUnits: Bool = true
     @State private var themeManager = ThemeManager()
     @State private var shouldMoveToNextPage: Bool = false
+    @State private var totalPages: Int = 7
     
     
     
@@ -20,52 +22,56 @@ struct OnboardingView: View {
     }
     
     var body: some View {
-        VStack() {
-            let totalPages = 6
-            ProgressView(value: Double(currentPage), total: Double(totalPages))
+        GeometryReader { geometry in
+    VStack(spacing: 0) {
+        ProgressView(value: Double(currentPage), total: Double(totalPages))
+            .padding(.top, geometry.safeAreaInsets.top)
+            .padding(.horizontal)
 
-            ZStack {
-                welcomeView.opacity(currentPage == 0 ? 1 : 0)
-                nameInputView.opacity(currentPage == 1 ? 1 : 0)
-                welcomeMessage.opacity(currentPage == 2 ? 1 : 0)
-                dataMessage.opacity(currentPage == 3 ? 1 : 0)
-                stepsMessage.opacity(currentPage == 4 ? 1 : 0)
-                stepsDisplayView.opacity(currentPage == 5 ? 1 : 0)
-                finalView.opacity(currentPage == 6 ? 1 : 0)
-            }
-            .animation(.easeInOut, value: currentPage)
-
-            
-            HStack {
-                if currentPage > 0 {
-                    Button("Back") {
-                        withAnimation {
-                            currentPage -= 1
-                        }
-                    }
-                }
-                
-                Spacer()
-                
-                Button(currentPage == totalPages ? "Get Started" : "Next") {
-                    withAnimation {
-                        if currentPage == totalPages {
-                            completeOnboarding()
-                        } else if currentPage == 1 && isValidName {
-                            currentPage += 1
-                        } else if currentPage != 1 {
-                            currentPage += 1
-                        }
-                    }
-                }
-                .disabled(currentPage == 1 && !isValidName)
-            }
-            .padding()
+        ZStack {
+            welcomeView.opacity(currentPage == 0 ? 1 : 0)
+            nameInputView.opacity(currentPage == 1 ? 1 : 0)
+            welcomeMessage.opacity(currentPage == 2 ? 1 : 0)
+            dataMessage.opacity(currentPage == 3 ? 1 : 0)
+            stepsMessage.opacity(currentPage == 4 ? 1 : 0)
+            stepsDisplayView.opacity(currentPage == 5 ? 1 : 0)
+            finalView.opacity(currentPage == 6 ? 1 : 0)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-.edgesIgnoringSafeArea(.all)
-        .preferredColorScheme(themeManager.currentTheme)
-        .applyTheme()
+        .animation(.easeInOut, value: currentPage)
+        .frame(maxHeight: .infinity)
+
+        HStack {
+            if currentPage > 0 {
+                Button("Back") {
+                    withAnimation {
+                        currentPage -= 1
+                    }
+                }
+            }
+            
+            Spacer()
+            
+            Button(currentPage == totalPages ? "Get Started" : "Next") {
+                withAnimation {
+                    if currentPage == totalPages {
+                        completeOnboarding()
+                    } else if currentPage == 1 && isValidName {
+                        currentPage += 1
+                    } else if currentPage != 1 {
+                        currentPage += 1
+                    }
+                }
+            }
+            .disabled(currentPage == 1 && !isValidName)
+        }
+        .padding(.horizontal)
+        .padding(.bottom, geometry.safeAreaInsets.bottom)
+    }
+    .frame(width: geometry.size.width, height: geometry.size.height)
+    .edgesIgnoringSafeArea(.all)
+}
+.preferredColorScheme(themeManager.currentTheme)
+.applyTheme()
     }
     
     private var welcomeView: some View {
@@ -166,28 +172,36 @@ struct OnboardingView: View {
     
     private var stepsDisplayView: some View {
         VStack(spacing: 20) {
-            Text("Debug: isAuthorized = \(healthKitManager.isAuthorized)")
-                .font(.caption)
-                .foregroundColor(.gray)
+            // Text("Debug: isAuthorized = \(healthKitManager.isAuthorized)")
+            //     .font(.caption)
+            //     .foregroundColor(.gray)
             
             if healthKitManager.isAuthorized {
                 if isLoading {
                     ProgressView("Fetching step count...")
                         .scaleEffect(1.5)
                 } else if let steps = allTimeSteps {
-                    Text("Wow! You've taken")
-                        .font(.custom("BodoniModa18pt-Regular", size: 24))
-                    Text("\(Int(steps))")
-                        .font(.custom("BodoniModa18pt-Regular", size: 36))
-                        .foregroundColor(.blue)
-                    Text("steps all-time!")
-                        .font(.custom("BodoniModa18pt-Regular", size: 24))
+                    VStack(spacing: 20) {
+                        Text("Wow ")
+                            .font(.custom("BodoniModa18pt-Regular", size: 24)) +
+                        Text(userName)
+                            .font(.custom("BodoniModa18pt-Regular", size: 24))
+                            .foregroundColor(.red) +
+                        Text(", you've taken")
+                            .font(.custom("BodoniModa18pt-Regular", size: 24))
+                        Text("\(Int(steps))")
+                            .font(.custom("BodoniModa18pt-Regular", size: 36))
+                            .foregroundColor(.blue)
+                        Text("steps since \(firstRecordedStep?.formatted(date: .abbreviated, time: .omitted) ?? "unknown date")!")
+                            .font(.custom("BodoniModa18pt-Regular", size: 24))
+                    }
                 } else {
                     Text("We couldn't fetch your step count. Please try again later.")
                         .font(.custom("BodoniModa18pt-Regular", size: 18))
                         .multilineTextAlignment(.center)
                     
                     Button("Retry Fetch") {
+                        fetchFirstRecordedStep()
                         fetchAllTimeSteps()
                     }
                     .font(.headline)
@@ -230,6 +244,16 @@ struct OnboardingView: View {
                 allTimeSteps = steps
             } else if let error = error {
                 print("Failed to fetch steps: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    private func fetchFirstRecordedStep() {
+        healthKitManager.getFirstRecordedStep { startDate, error in
+            if let startDate = startDate {
+                firstRecordedStep = startDate
+            } else if let error = error {
+                print("Failed to fetch first recorded step: \(error.localizedDescription)")
             }
         }
     }

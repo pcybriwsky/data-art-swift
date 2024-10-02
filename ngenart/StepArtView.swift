@@ -142,8 +142,9 @@ struct StepArtView: View {
                 captureWebViewImage()
             }
         }
-        .onDisappear {
-            // stopPeriodicCapture()
+        .onChange(of: selectedTimeRange) { _, _ in
+            hasCapturedImage = false
+            webViewLoaded = false
         }
     }
 
@@ -357,6 +358,8 @@ struct StepArtView: View {
 
                 let maxSteps = Math.max(...filteredData.map(d => d.steps));
                 let minSteps = Math.min(...filteredData.map(d => d.steps));
+                let oneDayHigh = Math.max(...rawData.map(d => d.steps));
+                let oneDayLow = Math.min(...rawData.map(d => d.steps));
                 let averageSteps = Math.round(filteredData.reduce((sum, d) => sum + d.steps, 0) / filteredData.length);
                 totalSteps = calculateTotalSteps(rawData, selectedTimeRange);
                 
@@ -418,9 +421,9 @@ struct StepArtView: View {
                 text(userName + "'s " + aggregationType + "Step Ticker", width - lineHeight, lineHeight);
                 textSize(12);
                 text("Total: " + totalSteps.toLocaleString() + " steps", width - lineHeight, lineHeight*2);
-                text(calculationType + "high: " + maxSteps.toLocaleString() + " steps", width - lineHeight, lineHeight*3);
-                text(calculationType + "low: " + minSteps.toLocaleString() + " steps", width - lineHeight, lineHeight*4);
-                text(calculationType + "average: " + averageSteps.toLocaleString() + " steps", width - lineHeight, lineHeight*5);
+                text("One-day High: " + oneDayHigh.toLocaleString() + " steps", width - lineHeight, lineHeight*3);
+                text("One-day Low: " + oneDayLow.toLocaleString() + " steps", width - lineHeight, lineHeight*4);
+                text("Average: " + averageSteps.toLocaleString() + " steps", width - lineHeight, lineHeight*5);
 
                 
                 // Add start and end dates

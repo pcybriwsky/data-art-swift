@@ -87,8 +87,15 @@ public class StepArtRenderer: ObservableObject {
 
             // Update the label to use the dynamic year
             var label = "\(unit == "miles" ? "Miles" : "Kilometers") from the start of \(year) to end of \(endYear)"
+            if endYear == 2024 {
+                label = "\(unit == "miles" ? "Miles" : "Kilometers") on foot from the start of \(year) to now"
+            }
+
             if year >= endYear {
                 label = "\(unit == "miles" ? "Miles" : "Kilometers") in \(year)"
+                if endYear == 2024 {
+                    label = "\(unit == "miles" ? "Miles" : "Kilometers") on foot so far this year"
+                }
             }
             let labelSize = label.size(withAttributes: labelAttributes)
             let labelRect = CGRect(

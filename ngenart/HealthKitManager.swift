@@ -303,4 +303,31 @@ func fetchDetailedStepData(completion: @escaping ([DetailedStepData]?, Error?) -
     healthStore.execute(query)
 }
 
+func getFirstRecordedStep(completion: @escaping (Date?, Error?) -> Void) {
+    let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+    let predicate = HKQuery.predicateForSamples(withStart: nil, end: Date(), options: .strictEndDate)
+    
+    let query = HKStatisticsQuery(quantityType: stepType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, error in
+        if let error = error {
+            DispatchQueue.main.async {
+                completion(nil, error)
+            }
+            return
+        }
+        
+        guard let result = result, let sum = result.sumQuantity() else {
+            DispatchQueue.main.async {
+                completion(nil, NSError(domain: "HealthKitManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "No results returned"]))
+            }
+            return
+        }
+    
+        let startDate = result.startDate
+        DispatchQueue.main.async {
+            completion(startDate, nil)
+        }
+    }
+    
+    healthStore.execute(query)
+}
 }
