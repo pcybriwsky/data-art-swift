@@ -17,13 +17,7 @@
 			<string>processing</string>
 		</array>
 		<key>NSHealthShareUsageDescription</key>
-		<string>This app requires access to your step count data to generate art.</string>
-		<key>NSHealthUpdateUsageDescription</key>
-		<string>This app requires access to your step count data to generate art.</string>
-		<key>NSHealthShareUsageDescription</key>
-		<string>This app requires access to your walking and running distance data to generate art.</string>
-		<key>NSHealthUpdateUsageDescription</key>
-		<string>This app requires access to your walking and running distance data to generate art.</string>
+		<string>This app requires access to your step count data, walking and running distance data, and sleep data to generate art.</string>
 		<key>UIAppFonts</key>
 		<array>
 			<string>BodoniModa_18pt-Italic.ttf</string>

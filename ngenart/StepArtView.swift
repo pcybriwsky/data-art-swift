@@ -389,12 +389,12 @@ struct StepArtView: View {
                 // Add labels
                 fill(221);
                 noStroke();
-                textAlign(LEFT, CENTER);
-                text("Time", width - padding, height - padding);
+                textAlign(LEFT, TOP);
+                text("Time", width - padding + 5, height - padding + 5);
                 
                 // Add "Steps" label at the top of y-axis, right-aligned
                 textAlign(RIGHT, TOP);
-                text("Steps", padding - 5, graphHeight - 20);
+                text("Steps", padding - 5, graphHeight - 20 - 5);
                 
                 // Add tick marks and labels on the right y-axis
                 textAlign(RIGHT, CENTER);
