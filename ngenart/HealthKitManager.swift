@@ -4,32 +4,156 @@ import SwiftUI
 class HealthKitManager: NSObject, ObservableObject {
     private let healthStore = HKHealthStore()
     @Published var isAuthorized: Bool = false
+    @Published var stepCountAuthorized: Bool = false
+    @Published var sleepAuthorized: Bool = false
+    @Published var distanceWalkingRunningAuthorized: Bool = false
+    
     // Check if HealthKit is available on this device
     func isHealthDataAvailable() -> Bool {
         return HKHealthStore.isHealthDataAvailable()
     }
 
     func checkAuthorizationStatus() {
-        let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
-        let status = healthStore.authorizationStatus(for: stepType)
+        checkStepCountAccess { success in
+            DispatchQueue.main.async {
+                self.stepCountAuthorized = success
+            }
+        }
+        
+        checkSleepAnalysisAccess { success in
+            DispatchQueue.main.async {
+                self.sleepAuthorized = success
+            }
+        }
+        
+        checkDistanceWalkingRunningAccess { success in
+            DispatchQueue.main.async {
+                self.distanceWalkingRunningAuthorized = success
+            }
+        }
+        
         DispatchQueue.main.async {
-            self.isAuthorized = (status == .sharingAuthorized)
+            self.isAuthorized = self.stepCountAuthorized && self.sleepAuthorized && self.distanceWalkingRunningAuthorized
+            
+            print("Step count authorized: \(self.stepCountAuthorized)")
+            print("Sleep analysis authorized: \(self.sleepAuthorized)")
+            print("Distance walking/running authorized: \(self.distanceWalkingRunningAuthorized)")
+            print("Overall HealthKit authorized: \(self.isAuthorized)")
+            
+            if self.isAuthorized {
+                print("HealthKit authorization confirmed for all required data types")
+                self.testFetchSleepData()
+            } else {
+                print("HealthKit authorization not confirmed for all required data types")
+            }
+        }
+        
+    }
+    
+    private func checkStepCountAccess(completion: @escaping (Bool) -> Void) {
+        let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+        let query = HKSampleQuery(sampleType: stepType, predicate: nil, limit: 1, sortDescriptors: nil) { (query, samples, error) in
+            let success = error == nil && samples != nil
+            print("Step count access: \(success ? "Granted" : "Denied")")
+            completion(success)
+        }
+        healthStore.execute(query)
+    }
+    
+    private func checkSleepAnalysisAccess(completion: @escaping (Bool) -> Void) {
+        let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
+        let query = HKSampleQuery(sampleType: sleepType, predicate: nil, limit: 1, sortDescriptors: nil) { (query, samples, error) in
+            let success = error == nil && samples != nil
+            print("Sleep analysis access: \(success ? "Granted" : "Denied")")
+            completion(success)
+        }
+        healthStore.execute(query)
+    }
+    
+    private func checkDistanceWalkingRunningAccess(completion: @escaping (Bool) -> Void) {
+        let distanceType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
+        let query = HKSampleQuery(sampleType: distanceType, predicate: nil, limit: 1, sortDescriptors: nil) { (query, samples, error) in
+            let success = error == nil && samples != nil
+            print("Distance walking/running access: \(success ? "Granted" : "Denied")")
+            completion(success)
+        }
+        healthStore.execute(query)
+    }
+    
+    func requestAuthorization(completion: @escaping (Bool, Error?) -> Void) {
+        let typesToRead: Set<HKObjectType> = [
+            HKObjectType.quantityType(forIdentifier: .stepCount)!,
+            HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!,
+            HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!
+        ]
+        
+        healthStore.requestAuthorization(toShare: nil, read: typesToRead) { (success, error) in
+            if success {
+                self.checkAuthorizationStatus()
+            }
+            completion(success, error)
+        }
+    }
+    
+    func testFetchSleepData() {
+        fetchSleepData { sleepHours, error in
+            if let sleepHours = sleepHours {
+                print("Sleep data fetched successfully. Total sleep in the last 7 days: \(sleepHours) hours")
+            } else if let error = error {
+                print("Error fetching sleep data: \(error.localizedDescription)")
+            } else {
+                print("No sleep data available for the last 7 days")
+            }
         }
     }
     
     // Request HealthKit authorization
-    func requestAuthorization(completion: @escaping (Bool, Error?) -> Void) {
-        let readTypes = Set([
-            HKObjectType.quantityType(forIdentifier: .stepCount)!,
-            // Add more types as needed
-        ])
+
+    func fetchSleepData(completion: @escaping (Double?, Error?) -> Void) {
+        print("In sleep fetch")
+        guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
+            print("Sleep Analysis type is not available")
+            completion(nil, NSError(domain: "HealthKitManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "Sleep Analysis type is not available"]))
+            return
+        }
         
-        healthStore.requestAuthorization(toShare: [], read: readTypes) { success, error in
+        let startDate = Calendar.current.date(byAdding: .day, value: -7, to: Date())!
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: Date(), options: .strictStartDate)
+        
+        print("Fetching sleep data from \(startDate) to \(Date())")
+        
+        let query = HKSampleQuery(sampleType: sleepType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, error in
+            if let error = error {
+                print("Error fetching sleep data: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    completion(nil, error)
+                }
+                return
+            }
+            
+            guard let samples = samples as? [HKCategorySample] else {
+                print("No sleep samples found or unable to cast samples")
+                DispatchQueue.main.async {
+                    completion(nil, NSError(domain: "HealthKitManager", code: 2, userInfo: [NSLocalizedDescriptionKey: "No sleep samples found"]))
+                }
+                return
+            }
+            
+            print("Found \(samples.count) sleep samples")
+            
+            let sleepTimeInHours = samples.reduce(0.0) { (result, sample) -> Double in
+                let sleepTimeInSeconds = sample.endDate.timeIntervalSince(sample.startDate)
+                return result + (sleepTimeInSeconds / 3600.0) // Convert seconds to hours
+            }
+            
+            print("Total sleep time: \(sleepTimeInHours) hours")
+            
             DispatchQueue.main.async {
-                self.isAuthorized = success
-                completion(success, error)
+                completion(sleepTimeInHours, nil)
             }
         }
+        
+        healthStore.execute(query)
     }
     
     // Fetch step count data

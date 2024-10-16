@@ -3,6 +3,8 @@ import SwiftUI
 import HealthKit
 
 struct Provider: TimelineProvider {
+    typealias Entry = SimpleEntry
+    
     let healthStore = HKHealthStore()
     
     func placeholder(in context: Context) -> SimpleEntry {

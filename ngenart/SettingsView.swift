@@ -2,6 +2,7 @@ import SwiftUI
 import HealthKit
 
 struct SettingsView: View {
+    @EnvironmentObject var healthKitManager: HealthKitManager
     @State private var userName: String = UserDefaults.standard.string(forKey: "userName") ?? ""
     @State private var useImperialUnits: Bool = UserManager.shared.useImperialUnits
     @State private var totalStepCount: Double?
@@ -10,69 +11,6 @@ struct SettingsView: View {
     @State private var healthDataAuthorized: Bool = false
     @AppStorage("isOnboarding") private var isOnboarding: Bool = false
 
-// Add this function to check HealthKit authorization status
-// private func checkHealthDataAuthorization() {
-//     guard HKHealthStore.isHealthDataAvailable() else {
-//         DispatchQueue.main.async {
-//             self.healthDataAuthorized = false
-//             print("HealthKit is not available on this device")
-//         }
-//         return
-//     }
-
-//     let healthStore = HKHealthStore()
-//     let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
-    
-//     let authStatus = healthStore.authorizationStatus(for: stepType)
-//     print("Authorization status: \(authStatus)")
-    
-//     DispatchQueue.main.async {
-//         switch authStatus {
-//         case .sharingAuthorized:
-//             self.healthDataAuthorized = true
-//             print("Health data is authorized")
-//         case .sharingDenied:
-//             self.healthDataAuthorized = false
-//             print("Health data sharing is denied")
-//         case .notDetermined:
-//             self.healthDataAuthorized = false
-//             print("Health data authorization is not determined")
-//         @unknown default:
-//             self.healthDataAuthorized = false
-//             print("Unknown health data authorization status: \(authStatus.rawValue)")
-//         }
-//         print("Health data authorized: \(self.healthDataAuthorized)")
-//     }
-// }
-
-// private func checkActualAuthorizationStatus(for stepType: HKQuantityType, healthStore: HKHealthStore) {
-//     DispatchQueue.main.async {
-//         self.healthDataAuthorized = healthStore.authorizationStatus(for: stepType) == .sharingAuthorized
-//         print("Health data authorized: \(self.healthDataAuthorized)")
-//     }
-// }
-
-// private func requestHealthDataAuthorization() {
-//     let healthStore = HKHealthStore()
-//     let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
-    
-//     healthStore.requestAuthorization(toShare: [], read: [stepType]) { (success, error) in
-//         DispatchQueue.main.async {
-//             if success {
-//                 self.healthDataAuthorized = true
-//                 print("Health data authorization granted")
-//             } else {
-//                 self.healthDataAuthorized = false
-//                 if let error = error {
-//                     print("Health data authorization failed: \(error.localizedDescription)")
-//                 } else {
-//                     print("Health data authorization denied")
-//                 }
-//             }
-//             self.checkHealthDataAuthorization() // Check again after requesting
-//         }
-//     }
-// }
 
     var body: some View {
         VStack {
@@ -116,19 +54,48 @@ struct SettingsView: View {
 }
 .padding(.top, 8)
 
-            HStack(spacing: 8) {
-                Text("Your Total Steps:")
-                if isLoading {
-                    ProgressView()
-                } else if let stepCount = totalStepCount {
-                    Text("\(Int(stepCount))")
-                        .font(.custom("BodoniModa18pt-Italic", size: 24))
-                } else {
-                    Text("Health Data not available")
-                        .font(.custom("BodoniModa18pt-Italic", size: 18))
-                        .foregroundColor(.gray)
-                }
-            }
+            VStack(spacing: 20) {
+    Text("Linked Data Sources")
+        .font(.custom("BodoniModa18pt-Italic", size: 20))
+        .padding(.top)
+    
+    HStack(spacing: 20) {
+        VStack {
+            Image(systemName: healthKitManager.stepCountAuthorized ? "figure.walk.circle.fill" : "figure.walk.circle")
+                .font(.system(size: 30))
+            Text("Step Count")
+                .font(.custom("BodoniModa18pt-Italic", size: 16))
+        }
+        .foregroundColor(healthKitManager.stepCountAuthorized ? .primary : .gray)
+        
+        VStack {
+            Image(systemName: healthKitManager.sleepAuthorized ? "bed.double.circle.fill" : "bed.double.circle")
+                .font(.system(size: 30))
+            Text("Sleep")
+                .font(.custom("BodoniModa18pt-Italic", size: 16))
+        }
+        .foregroundColor(healthKitManager.sleepAuthorized ? .primary : .gray)
+    }
+    
+    HStack(spacing: 20) {
+        VStack {
+            Image(systemName: healthKitManager.distanceWalkingRunningAuthorized ? "figure.walk.circle.fill" : "figure.walk.circle")
+                .font(.system(size: 30))
+            Text("Walking + Running\nDistance")
+                .font(.custom("BodoniModa18pt-Italic", size: 16))
+                .multilineTextAlignment(.center)
+        }
+        .foregroundColor(healthKitManager.distanceWalkingRunningAuthorized ? .primary : .gray)
+        
+        VStack {
+            Image(systemName: "music.note.list")
+                .font(.system(size: 30))
+            Text("Spotify")
+                .font(.custom("BodoniModa18pt-Italic", size: 16))
+        }
+        .foregroundColor(.gray) // Assuming Spotify is not linked yet
+    }
+}
             .padding(.top, 8)
             
             Spacer()

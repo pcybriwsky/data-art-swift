@@ -2,6 +2,8 @@ import SwiftUI
 import HealthKit
 import WebKit
 import UniformTypeIdentifiers
+import UIKit
+
 
 
 struct StepArtView: View {
@@ -286,6 +288,7 @@ struct StepArtView: View {
             }
         }
     }
+
 
    var p5Sketch: String {
     let fontBase64 = Bundle.main.readFileAsBase64("BodoniModa18pt-Italic.ttf") ?? ""

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct HomeView: View {
+    @EnvironmentObject var healthKitManager: HealthKitManager
     @State private var userName: String = UserDefaults.standard.string(forKey: "userName") ?? ""    
 
 let artPieces: [ArtPiece] = [

@@ -1,6 +1,7 @@
 import SwiftUI
 import HealthKit
 import WidgetKit
+import Foundation
 
 @available(iOS 16.0, *)
 public struct GenArtView: View {

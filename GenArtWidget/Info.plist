@@ -1,29 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
+<dict>
+	<key>App Groups</key>
+	<array>
+		<string>group.com.ngenart.dataArtWidget</string>
+	</array>
+	<key>NSExtension</key>
 	<dict>
-		<key>App Groups</key>
-		<array>
-			<string>group.com.ngenart.genart</string>
-		</array>
-		<key>NSExtension</key>
-		<dict>
-			<key>NSExtensionPointIdentifier</key>
-			<string>com.apple.widgetkit-extension</string>
-		</dict>
-		<key>UIBackgroundModes</key>
-		<array>
-			<string>fetch</string>
-			<string>processing</string>
-		</array>
-		<key>NSHealthShareUsageDescription</key>
-		<string>This app requires access to your step count data, walking and running distance data, and sleep data to generate art.</string>
-		<key>UIAppFonts</key>
-		<array>
-			<string>BodoniModa_18pt-Italic.ttf</string>
-			<string>BodoniModa_18pt-Regular.ttf</string>
-		</array>
-		<key>CFBundleIdentifier</key>
-<string>com.ngenart.genart</string>
+		<key>NSExtensionPointIdentifier</key>
+		<string>com.apple.widgetkit-extension</string>
 	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>BodoniModa_18pt-Italic.ttf</string>
+		<string>BodoniModa_18pt-Regular.ttf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+	</array>
+</dict>
 </plist>
