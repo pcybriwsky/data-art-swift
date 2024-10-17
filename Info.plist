@@ -19,5 +19,7 @@
 			patterns and activity.</string>
 		<key>NSHealthUpdateUsageDescription</key>
 		<string>This app requires permission to update your health data.</string>
+		<key>NSFamilyControlsUsageDescription</key>
+		<string>This app requires access to Screen Time data to provide insights into your device usage.</string>
 	</dict>
 </plist>

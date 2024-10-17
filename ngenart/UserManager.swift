@@ -12,9 +12,9 @@ class UserManager {
     private init() {
         if let sharedDefaults = UserDefaults(suiteName: suiteName) {
             self.defaults = sharedDefaults
-            print("Successfully initialized UserDefaults with suite name: \(suiteName)")
+            // print("Successfully initialized UserDefaults with suite name: \(suiteName)")
         } else {
-            print("Failed to initialize shared UserDefaults. Falling back to standard UserDefaults.")
+            // print("Failed to initialize shared UserDefaults. Falling back to standard UserDefaults.")
             self.defaults = UserDefaults.standard
         }
         
@@ -39,19 +39,19 @@ class UserManager {
     }
     
     private func verifyValues() {
-        print("Verification - useImperialUnits: \(defaults.bool(forKey: "useImperialUnits"))")
-        print("Verification - startYear: \(defaults.integer(forKey: "startYear"))")
+        // print("Verification - useImperialUnits: \(defaults.bool(forKey: "useImperialUnits"))")
+        // print("Verification - startYear: \(defaults.integer(forKey: "startYear"))")
     }
     
     var useImperialUnits: Bool {
         get {
             let value = defaults.bool(forKey: "useImperialUnits")
-            print("Retrieved useImperialUnits: \(value)")
+            // print("Retrieved useImperialUnits: \(value)")
             return value
         }
         set {
             print("Attempting to set useImperialUnits to: \(newValue)")
-            defaults.set(newValue, forKey: "useImperialUnits")
+            // defaults.set(newValue, forKey: "useImperialUnits")
             verifyValues()
         }
     }
@@ -59,11 +59,11 @@ class UserManager {
     var startYear: Int {
         get {
             let value = defaults.integer(forKey: "startYear")
-            print("Retrieved startYear: \(value)")
+            // print("Retrieved startYear: \(value)")
             return value
         }
         set {
-            print("Attempting to set startYear to: \(newValue)")
+            // print("Attempting to set startYear to: \(newValue)")
             defaults.set(newValue, forKey: "startYear")
             verifyValues()
         }
@@ -72,18 +72,18 @@ class UserManager {
     var endYear: Int {
         get {
             let value = defaults.integer(forKey: "endYear")
-            print("Retrieved endYear: \(value)")
+            // print("Retrieved endYear: \(value)")
             return value
         }
         set {
-            print("Attempting to set endYear to: \(newValue)")
+            // print("Attempting to set endYear to: \(newValue)")
             defaults.set(newValue, forKey: "endYear")
             verifyValues()
         }
     }
     
     func resetToDefaults() {
-        print("Resetting to default values")
+        // print("Resetting to default values")
         defaults.removeObject(forKey: "useImperialUnits")
         defaults.removeObject(forKey: "startYear")
         defaults.removeObject(forKey: "endYear")

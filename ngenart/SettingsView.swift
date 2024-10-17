@@ -9,9 +9,14 @@ struct SettingsView: View {
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?
     @State private var healthDataAuthorized: Bool = false
+    
+    @State private var screenTimeAuthorized: Bool = false
+    
     @AppStorage("isOnboarding") private var isOnboarding: Bool = false
-
-
+    
+    @StateObject private var screenTimeManager = ScreenTimeManager.shared
+    
+    
     var body: some View {
         VStack {
             Text("Settings")
@@ -41,70 +46,78 @@ struct SettingsView: View {
             }
             
             HStack {
-    Text("Health Data")
-        .font(.custom("BodoniModa18pt-Italic", size: 18))
-    
-    if healthDataAuthorized {
-        Image(systemName: "checkmark.circle.fill")
-            .foregroundColor(.green)
-    } else {
-        Image(systemName: "exclamationmark.circle.fill")
-            .foregroundColor(.red)
-    }
-}
-.padding(.top, 8)
-
+                Text("Health Data")
+                    .font(.custom("BodoniModa18pt-Italic", size: 18))
+                
+                if healthDataAuthorized {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                } else {
+                    Image(systemName: "exclamationmark.circle.fill")
+                        .foregroundColor(.red)
+                }
+            }
+            .padding(.top, 8)
+            
             VStack(spacing: 20) {
-    Text("Linked Data Sources")
-        .font(.custom("BodoniModa18pt-Italic", size: 20))
-        .padding(.top)
-    
-    HStack(spacing: 20) {
-        VStack {
-            Image(systemName: healthKitManager.stepCountAuthorized ? "figure.walk.circle.fill" : "figure.walk.circle")
-                .font(.system(size: 30))
-            Text("Step Count")
-                .font(.custom("BodoniModa18pt-Italic", size: 16))
-        }
-        .foregroundColor(healthKitManager.stepCountAuthorized ? .primary : .gray)
-        
-        VStack {
-            Image(systemName: healthKitManager.sleepAuthorized ? "bed.double.circle.fill" : "bed.double.circle")
-                .font(.system(size: 30))
-            Text("Sleep")
-                .font(.custom("BodoniModa18pt-Italic", size: 16))
-        }
-        .foregroundColor(healthKitManager.sleepAuthorized ? .primary : .gray)
-    }
-    
-    HStack(spacing: 20) {
-        VStack {
-            Image(systemName: healthKitManager.distanceWalkingRunningAuthorized ? "figure.walk.circle.fill" : "figure.walk.circle")
-                .font(.system(size: 30))
-            Text("Walking + Running\nDistance")
-                .font(.custom("BodoniModa18pt-Italic", size: 16))
-                .multilineTextAlignment(.center)
-        }
-        .foregroundColor(healthKitManager.distanceWalkingRunningAuthorized ? .primary : .gray)
-        
-        VStack {
-            Image(systemName: "music.note.list")
-                .font(.system(size: 30))
-            Text("Spotify")
-                .font(.custom("BodoniModa18pt-Italic", size: 16))
-        }
-        .foregroundColor(.gray) // Assuming Spotify is not linked yet
-    }
-}
+                Text("Linked Data Sources")
+                    .font(.custom("BodoniModa18pt-Italic", size: 20))
+                    .padding(.top)
+                
+                HStack(spacing: 20) {
+                VStack {
+                    Image(systemName: healthKitManager.stepCountAuthorized ? "figure.walk.circle.fill" : "figure.walk.circle")
+                        .font(.system(size: 30))
+                    Text("Step Count")
+                        .font(.custom("BodoniModa18pt-Italic", size: 16))
+                }
+                .foregroundColor(healthKitManager.stepCountAuthorized ? .primary : .gray)
+                
+                VStack {
+                    Image(systemName: healthKitManager.sleepAuthorized ? "bed.double.circle.fill" : "bed.double.circle")
+                        .font(.system(size: 30))
+                    Text("Sleep")
+                        .font(.custom("BodoniModa18pt-Italic", size: 16))
+                }
+                .foregroundColor(healthKitManager.sleepAuthorized ? .primary : .gray)
+            }
+
+            HStack(spacing: 20) {
+                VStack {
+                    Image(systemName: healthKitManager.distanceWalkingRunningAuthorized ? "figure.walk.circle.fill" : "figure.walk.circle")
+                        .font(.system(size: 30))
+                    Text("Walking + Running\nDistance")
+                        .font(.custom("BodoniModa18pt-Italic", size: 16))
+                        .multilineTextAlignment(.center)
+                }
+                .foregroundColor(healthKitManager.distanceWalkingRunningAuthorized ? .primary : .gray)
+                    
+                    VStack {
+                        Image(systemName: screenTimeManager.isAuthorized ? "hourglass.circle.fill" : "hourglass.circle")
+                            .font(.system(size: 30))
+                        Text("Screen Time")
+                            .font(.custom("BodoniModa18pt-Italic", size: 16))
+                    }
+                    .foregroundColor(screenTimeManager.isAuthorized ? .primary : .gray)
+                }
+            }
             .padding(.top, 8)
             
             Spacer()
         }
         .padding()
         .background(Color(hex: 0xfffef7))
-        // .onAppear(perform: checkHealthDataAuthorization)
-        // .onAppear(perform: requestHealthDataAuthorization)
-        .onAppear(perform: fetchTotalSteps)
+        .onAppear(
+            perform: {
+                healthKitManager.checkAuthorizationStatus()
+                fetchTotalSteps()
+                screenTimeManager.checkAuthorizationStatus()
+                 
+            }
+        )
+        .onChange(of: healthKitManager.isAuthorized) { newValue in
+            healthDataAuthorized = newValue
+        }
         
         Button(action: {
             UserDefaults.standard.removeObject(forKey: "userName")
@@ -131,4 +144,3 @@ struct SettingsView: View {
         }
     }
 }
-

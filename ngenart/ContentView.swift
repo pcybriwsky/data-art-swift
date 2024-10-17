@@ -4,9 +4,10 @@ import HealthKit
 struct ContentView: View {
     @State private var isOnboarding = true
     @State private var userName = ""
-    
+    @State private var screenTimeData = ""
     // Create an instance of HealthKitManager
     private let healthKitManager = HealthKitManager()
+    @StateObject private var screenTimeManager = ScreenTimeManager.shared
     
     var body: some View {
         Group {
@@ -17,12 +18,27 @@ struct ContentView: View {
             }
         }
         .environmentObject(healthKitManager)  // Pass HealthKitManager as an environment object
+        .environmentObject(screenTimeManager)  // Pass ScreenTimeManager as an environment object
         .onAppear {
             if let name = UserDefaults.standard.string(forKey: "userName") {
                 userName = name
                 isOnboarding = false
             }
-            checkAndRequestHealthKitPermissions()
+            screenTimeManager.requestAuthorization { success, error in
+                if success {
+                    print("Screen Time authorization granted")
+                    screenTimeManager.fetchBasicScreenTimeData { data in
+                screenTimeData = data
+                        print(screenTimeData)
+                    }
+                } else {
+                    print("Failed to get Screen Time authorization: \(error?.localizedDescription ?? "Unknown error")")
+                }
+            }
+            
+            
+                    
+            
         }
     }
     

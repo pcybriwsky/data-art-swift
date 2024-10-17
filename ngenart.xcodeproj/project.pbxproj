@@ -25,6 +25,8 @@
 		EB367AC92C9A5BA60073F913 /* ngenart.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = EB2885082C7037F80054C8D3 /* ngenart.entitlements */; };
 		EB5ACFAF2CA8C6140096BD50 /* favicon-32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5ACFAE2CA8C6140096BD50 /* favicon-32x32.png */; };
 		EB5ACFB12CA8CDDF0096BD50 /* p5Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ACFB02CA8CDDF0096BD50 /* p5Extensions.swift */; };
+		EB8BC1AB2CC0584C00800EE0 /* ScreentimeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB8BC1AA2CC0584200800EE0 /* ScreentimeManager.swift */; };
+		EB8BC1BC2CC0899700800EE0 /* ScreenTimeReportExtension.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = EB8BC1B02CC0899700800EE0 /* ScreenTimeReportExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		EB9A99572C9CC4290013162D /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9A99562C9CC4290013162D /* ThemeManager.swift */; };
 		EB9A99582C9CC5EA0013162D /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9A99562C9CC4290013162D /* ThemeManager.swift */; };
 		EBA8A8482C935F0D00E895FA /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBA8A8472C935F0D00E895FA /* WidgetKit.framework */; };
@@ -115,6 +117,13 @@
 			remoteGlobalIDString = EB2884FE2C7037F50054C8D3;
 			remoteInfo = ngenart;
 		};
+		EB8BC1BA2CC0899700800EE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EB2884F72C7037F50054C8D3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EB8BC1AF2CC0899700800EE0;
+			remoteInfo = ScreenTimeReportExtension;
+		};
 		EBA8A8572C935F1000E895FA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EB2884F72C7037F50054C8D3 /* Project object */;
@@ -125,6 +134,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		EB8BC1C12CC0899700800EE0 /* Embed ExtensionKit Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+				EB8BC1BC2CC0899700800EE0 /* ScreenTimeReportExtension.appex in Embed ExtensionKit Extensions */,
+			);
+			name = "Embed ExtensionKit Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EBA8A85A2C935F1000E895FA /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -158,6 +178,8 @@
 		EB367AC52C9A458F0073F913 /* TemplateWidget.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TemplateWidget.md; sourceTree = "<group>"; };
 		EB5ACFAE2CA8C6140096BD50 /* favicon-32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "favicon-32x32.png"; sourceTree = "<group>"; };
 		EB5ACFB02CA8CDDF0096BD50 /* p5Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = p5Extensions.swift; sourceTree = "<group>"; };
+		EB8BC1AA2CC0584200800EE0 /* ScreentimeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreentimeManager.swift; sourceTree = "<group>"; };
+		EB8BC1B02CC0899700800EE0 /* ScreenTimeReportExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = ScreenTimeReportExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB9A99562C9CC4290013162D /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		EBA8A8452C935F0D00E895FA /* GenArtWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GenArtWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBA8A8472C935F0D00E895FA /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -210,6 +232,20 @@
 		EBDAF80D2C70524E00975182 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		EB8BC1BD2CC0899700800EE0 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = EB8BC1AF2CC0899700800EE0 /* ScreenTimeReportExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		EB8BC1B12CC0899700800EE0 /* ScreenTimeReportExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (EB8BC1BD2CC0899700800EE0 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ScreenTimeReportExtension; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		EB2884FC2C7037F50054C8D3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -228,6 +264,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		EB2885172C7037F80054C8D3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB8BC1AD2CC0899700800EE0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -255,6 +298,7 @@
 				EB2885132C7037F80054C8D3 /* ngenartTests */,
 				EB28851D2C7037F80054C8D3 /* ngenartUITests */,
 				EBA8A84B2C935F0D00E895FA /* GenArtWidget */,
+				EB8BC1B12CC0899700800EE0 /* ScreenTimeReportExtension */,
 				EBA8A8462C935F0D00E895FA /* Frameworks */,
 				EB2885002C7037F50054C8D3 /* Products */,
 			);
@@ -267,6 +311,7 @@
 				EB2885102C7037F80054C8D3 /* ngenartTests.xctest */,
 				EB28851A2C7037F80054C8D3 /* ngenartUITests.xctest */,
 				EBA8A8452C935F0D00E895FA /* GenArtWidgetExtension.appex */,
+				EB8BC1B02CC0899700800EE0 /* ScreenTimeReportExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -283,6 +328,7 @@
 				EB9A99562C9CC4290013162D /* ThemeManager.swift */,
 				EBC446F22C9C8073002CDBEA /* SettingsView.swift */,
 				EB5ACFB02CA8CDDF0096BD50 /* p5Extensions.swift */,
+				EB8BC1AA2CC0584200800EE0 /* ScreentimeManager.swift */,
 				EBC2C9572C9667610099DCDF /* Extensions.swift */,
 				EB1BE3032C967F1500C64A0C /* OnboardingView.swift */,
 				EB2885042C7037F50054C8D3 /* ContentView.swift */,
@@ -420,11 +466,13 @@
 				EB2884FC2C7037F50054C8D3 /* Frameworks */,
 				EB2884FD2C7037F50054C8D3 /* Resources */,
 				EBA8A85A2C935F1000E895FA /* Embed Foundation Extensions */,
+				EB8BC1C12CC0899700800EE0 /* Embed ExtensionKit Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				EBA8A8582C935F1000E895FA /* PBXTargetDependency */,
+				EB8BC1BB2CC0899700800EE0 /* PBXTargetDependency */,
 			);
 			name = ngenart;
 			productName = ngenart;
@@ -467,6 +515,28 @@
 			productReference = EB28851A2C7037F80054C8D3 /* ngenartUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		EB8BC1AF2CC0899700800EE0 /* ScreenTimeReportExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB8BC1BE2CC0899700800EE0 /* Build configuration list for PBXNativeTarget "ScreenTimeReportExtension" */;
+			buildPhases = (
+				EB8BC1AC2CC0899700800EE0 /* Sources */,
+				EB8BC1AD2CC0899700800EE0 /* Frameworks */,
+				EB8BC1AE2CC0899700800EE0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				EB8BC1B12CC0899700800EE0 /* ScreenTimeReportExtension */,
+			);
+			name = ScreenTimeReportExtension;
+			packageProductDependencies = (
+			);
+			productName = ScreenTimeReportExtension;
+			productReference = EB8BC1B02CC0899700800EE0 /* ScreenTimeReportExtension.appex */;
+			productType = "com.apple.product-type.extensionkit-extension";
+		};
 		EBA8A8442C935F0D00E895FA /* GenArtWidgetExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EBA8A85D2C935F1000E895FA /* Build configuration list for PBXNativeTarget "GenArtWidgetExtension" */;
@@ -494,7 +564,7 @@
 				KnownAssetTags = (
 					New,
 				);
-				LastSwiftUpdateCheck = 1540;
+				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					EB2884FE2C7037F50054C8D3 = {
@@ -507,6 +577,9 @@
 					EB2885192C7037F80054C8D3 = {
 						CreatedOnToolsVersion = 15.4;
 						TestTargetID = EB2884FE2C7037F50054C8D3;
+					};
+					EB8BC1AF2CC0899700800EE0 = {
+						CreatedOnToolsVersion = 16.0;
 					};
 					EBA8A8442C935F0D00E895FA = {
 						CreatedOnToolsVersion = 15.4;
@@ -530,6 +603,7 @@
 				EB28850F2C7037F80054C8D3 /* ngenartTests */,
 				EB2885192C7037F80054C8D3 /* ngenartUITests */,
 				EBA8A8442C935F0D00E895FA /* GenArtWidgetExtension */,
+				EB8BC1AF2CC0899700800EE0 /* ScreenTimeReportExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -578,6 +652,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		EB2885182C7037F80054C8D3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB8BC1AE2CC0899700800EE0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -635,6 +716,7 @@
 				EB367AC02C9A42DB0073F913 /* TemplateArtView.swift in Sources */,
 				EBA8A8612C93726E00E895FA /* GenArtView.swift in Sources */,
 				EB218F522CA1FE3C002EC5C4 /* StepArtView.swift in Sources */,
+				EB8BC1AB2CC0584C00800EE0 /* ScreentimeManager.swift in Sources */,
 				EBC2C9552C9666E20099DCDF /* HomeView.swift in Sources */,
 				EBC410422C76E6EA00744885 /* LocationManager.swift in Sources */,
 				EBC2C9582C9667610099DCDF /* Extensions.swift in Sources */,
@@ -661,6 +743,13 @@
 			files = (
 				EB2885212C7037F80054C8D3 /* ngenartUITestsLaunchTests.swift in Sources */,
 				EB28851F2C7037F80054C8D3 /* ngenartUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB8BC1AC2CC0899700800EE0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -692,6 +781,11 @@
 			isa = PBXTargetDependency;
 			target = EB2884FE2C7037F50054C8D3 /* ngenart */;
 			targetProxy = EB28851B2C7037F80054C8D3 /* PBXContainerItemProxy */;
+		};
+		EB8BC1BB2CC0899700800EE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EB8BC1AF2CC0899700800EE0 /* ScreenTimeReportExtension */;
+			targetProxy = EB8BC1BA2CC0899700800EE0 /* PBXContainerItemProxy */;
 		};
 		EBA8A8582C935F1000E895FA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -995,6 +1089,63 @@
 			};
 			name = Release;
 		};
+		EB8BC1BF2CC0899700800EE0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ScreenTimeReportExtension/ScreenTimeReportExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HY8S2WXJ2X;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ScreenTimeReportExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ScreenTimeReportExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ngenart.dataArt.ScreenTimeReportExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EB8BC1C02CC0899700800EE0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ScreenTimeReportExtension/ScreenTimeReportExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HY8S2WXJ2X;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ScreenTimeReportExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ScreenTimeReportExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ngenart.dataArt.ScreenTimeReportExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		EBA8A85B2C935F1000E895FA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1093,6 +1244,15 @@
 			buildConfigurations = (
 				EB28852B2C7037F80054C8D3 /* Debug */,
 				EB28852C2C7037F80054C8D3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EB8BC1BE2CC0899700800EE0 /* Build configuration list for PBXNativeTarget "ScreenTimeReportExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB8BC1BF2CC0899700800EE0 /* Debug */,
+				EB8BC1C02CC0899700800EE0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
