@@ -7,17 +7,27 @@ extension DeviceActivityName {
     static let daily = Self("daily")
 }
 
+extension DeviceActivityEvent.Name {
+    static let encouraged = Self("encouraged")
+}
+
+
 class ScreenTimeManager: ObservableObject {
     static let shared = ScreenTimeManager()
     
     @Published var isAuthorized: Bool = false
     @Published var screenTimeData: String = "No data available"
+    @Published var screenTimeReport: DeviceActivityReport.Context?
+    @Published var monitoringStatus: String = "Not monitoring"
     
     private let center = AuthorizationCenter.shared
     private let deviceActivityCenter = DeviceActivityCenter()
 
     
-    private init() {}
+    private init() {
+        model = MyModel() // Initialize your model here
+
+    }
     
     func requestAuthorization(completion: @escaping (Bool, Error?) -> Void) {
         Task {
@@ -87,5 +97,66 @@ class ScreenTimeManager: ObservableObject {
         } catch {
             completion("Failed to start monitoring: \(error.localizedDescription)")
         }
+    }
+
+    func startMonitoringDeviceActivity() {
+        guard isAuthorized else {
+            print("Not authorized to monitor device activity")
+            return
+        }
+        
+        let schedule = DeviceActivitySchedule(
+            intervalStart: DateComponents(hour: 0, minute: 0),
+            intervalEnd: DateComponents(hour: 23, minute: 59),
+            repeats: true
+        )
+        
+        let events: [DeviceActivityEvent.Name: DeviceActivityName] = [
+            .encouraged: DeviceActivityName(
+                applications: model.selectionToEncourage.applicationsTokens,
+                threshold: DateComponents(minute: model.minutes) // Assuming 'minutes' is a property of MyModel
+            )
+        ]
+        
+        do {
+        try deviceActivityCenter.startMonitoring(.daily, events: events, during: schedule)
+        monitoringStatus = "Monitoring started"
+        print("Successfully started monitoring device activity")
+    } catch {
+        monitoringStatus = "Failed to start monitoring: \(error.localizedDescription)"
+            print("Failed to start monitoring device activity: \(error.localizedDescription)")
+        }   
+    }
+    
+    func stopMonitoringDeviceActivity() {
+        deviceActivityCenter.stopMonitoring([.daily])
+        monitoringStatus = "Monitoring stopped"
+        print("Stopped monitoring device activity")
+    }
+    
+    func setDeviceActivityFilter() {
+        let filter = DeviceActivityFilter(
+            segment: .daily(during: DeviceActivitySchedule(
+                intervalStart: DateComponents(hour: 0, minute: 0),
+                intervalEnd: DateComponents(hour: 23, minute: 59),
+                repeats: true
+            )),
+            users: .all,
+            devices: .init([.iPhone, .iPad])
+        )
+        
+        // You can use this filter when requesting reports or setting up monitoring
+        // For example, you could pass this to a DeviceActivityReport.request call
+    }
+}
+
+struct MyModel {
+    var selectionToEncourage: FamilyActivitySelection
+    var minutes: Int
+    
+    init() {
+        // Initialize with default values or load from user preferences
+        self.selectionToEncourage = FamilyActivitySelection()
+        self.minutes = 60 // Default to 1 hour
     }
 }

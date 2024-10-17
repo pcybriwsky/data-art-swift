@@ -130,7 +130,13 @@ struct SettingsView: View {
                 .cornerRadius(8)
         }
         .padding()
+        ScreenTimeReportView()
+    .tabItem {
+        Image(systemName: "hourglass")
+            Text("Screen Time")
+        }
     }
+    
     
     private func fetchTotalSteps() {
         isLoading = true

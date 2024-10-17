@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -27,6 +27,7 @@
 		EB5ACFB12CA8CDDF0096BD50 /* p5Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5ACFB02CA8CDDF0096BD50 /* p5Extensions.swift */; };
 		EB8BC1AB2CC0584C00800EE0 /* ScreentimeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB8BC1AA2CC0584200800EE0 /* ScreentimeManager.swift */; };
 		EB8BC1BC2CC0899700800EE0 /* ScreenTimeReportExtension.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = EB8BC1B02CC0899700800EE0 /* ScreenTimeReportExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		EB8BC1C32CC1AE0000800EE0 /* ScreenTimeReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB8BC1C22CC1ADF900800EE0 /* ScreenTimeReportView.swift */; };
 		EB9A99572C9CC4290013162D /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9A99562C9CC4290013162D /* ThemeManager.swift */; };
 		EB9A99582C9CC5EA0013162D /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9A99562C9CC4290013162D /* ThemeManager.swift */; };
 		EBA8A8482C935F0D00E895FA /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBA8A8472C935F0D00E895FA /* WidgetKit.framework */; };
@@ -180,6 +181,7 @@
 		EB5ACFB02CA8CDDF0096BD50 /* p5Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = p5Extensions.swift; sourceTree = "<group>"; };
 		EB8BC1AA2CC0584200800EE0 /* ScreentimeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreentimeManager.swift; sourceTree = "<group>"; };
 		EB8BC1B02CC0899700800EE0 /* ScreenTimeReportExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = ScreenTimeReportExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB8BC1C22CC1ADF900800EE0 /* ScreenTimeReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeReportView.swift; sourceTree = "<group>"; };
 		EB9A99562C9CC4290013162D /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		EBA8A8452C935F0D00E895FA /* GenArtWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GenArtWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBA8A8472C935F0D00E895FA /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -326,6 +328,7 @@
 				EB1BE3052C967FD600C64A0C /* UserManager.swift */,
 				EBC2C9542C9666E20099DCDF /* HomeView.swift */,
 				EB9A99562C9CC4290013162D /* ThemeManager.swift */,
+				EB8BC1C22CC1ADF900800EE0 /* ScreenTimeReportView.swift */,
 				EBC446F22C9C8073002CDBEA /* SettingsView.swift */,
 				EB5ACFB02CA8CDDF0096BD50 /* p5Extensions.swift */,
 				EB8BC1AA2CC0584200800EE0 /* ScreentimeManager.swift */,
@@ -725,6 +728,7 @@
 				EB9A99572C9CC4290013162D /* ThemeManager.swift in Sources */,
 				EB1BE3042C967F1500C64A0C /* OnboardingView.swift in Sources */,
 				EB2885032C7037F50054C8D3 /* ngenartApp.swift in Sources */,
+				EB8BC1C32CC1AE0000800EE0 /* ScreenTimeReportView.swift in Sources */,
 				EBC410442C76E70200744885 /* PermissionsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
